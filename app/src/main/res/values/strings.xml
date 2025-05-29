@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nombre de la aplicación -->
+    <string name="app_name">Marvel Studios</string>
+    
+    <!-- Pantalla de Login -->
+    <string name="login_title">Bienvenido a Marvel</string>
+    <string name="login_subtitle">Accede a tu universo de superhéroes</string>
+    <string name="hint_usuario">Usuario</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="btn_login">Iniciar Sesión</string>
+    <string name="btn_register">Registrarse</string>
+    <string name="error_empty_fields">Por favor completa todos los campos</string>
+    <string name="error_invalid_credentials">Usuario o contraseña incorrectos</string>
+    <string name="login_loading">Iniciando sesión...</string>
+    
+    <!-- Pantalla de Registro -->
+    <string name="register_title">Únete a Marvel</string>
+    <string name="register_subtitle">Crea tu cuenta de superhéroe</string>
+    <string name="hint_nombre">Nombre completo</string>
+    <string name="hint_email">Correo electrónico</string>
+    <string name="hint_confirm_password">Confirmar contraseña</string>
+    <string name="hint_fecha_nacimiento">Fecha de nacimiento</string>
+    <string name="checkbox_terms">Acepto los términos y condiciones</string>
+    <string name="btn_create_account">Crear Cuenta</string>
+    <string name="btn_back_login">Volver al Login</string>
+    <string name="error_name_short">El nombre debe tener al menos 2 caracteres</string>
+    <string name="error_email_invalid">Formato de email inválido</string>
+    <string name="error_email_exists">Este email ya está registrado</string>
+    <string name="error_password_short">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="error_password_weak">La contraseña debe contener al menos una letra y un número</string>
+    <string name="error_password_mismatch">Las contraseñas no coinciden</string>
+    <string name="error_age_restriction">Debes ser mayor de 13 años</string>
+    <string name="error_terms_required">Debes aceptar los términos y condiciones</string>
+    <string name="register_success">Cuenta creada exitosamente</string>
+    <string name="register_loading">Creando cuenta...</string>
+    
+    <!-- Navegación -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_solicitar">Solicitar</string>
+    <string name="nav_configuracion">Configuración</string>
+    
+    <!-- Toolbar -->
+    <string name="menu_search">Buscar</string>
+    <string name="menu_notifications">Notificaciones</string>
+    <string name="menu_logout">Cerrar Sesión</string>
+    
+    <!-- Fragment Home -->
+    <string name="home_welcome">¡Bienvenido, %s!</string>
+    <string name="home_subtitle">Explora el universo Marvel</string>
+    <string name="search_hint">Buscar superhéroes...</string>
+    <string name="filter_all">Todos</string>
+    <string name="filter_avengers">Avengers</string>
+    <string name="filter_xmen">X-Men</string>
+    <string name="filter_fantastic4">4 Fantásticos</string>
+    <string name="filter_spiderverse">Spider-Verse</string>
+    <string name="filter_guardians">Guardianes</string>
+    <string name="no_heroes_found">No se encontraron superhéroes</string>
+    <string name="loading_heroes">Cargando superhéroes...</string>
+    <string name="error_loading_heroes">Error al cargar superhéroes</string>
+    <string name="btn_retry">Reintentar</string>
+    <string name="hero_added_favorites">Agregado a favoritos</string>
+    <string name="hero_removed_favorites">Removido de favoritos</string>
+    
+    <!-- Fragment Solicitar -->
+    <string name="solicitar_title">Solicitar Comic</string>
+    <string name="solicitar_subtitle">Elige tu comic favorito</string>
+    <string name="spinner_hint">Selecciona un comic</string>
+    <string name="hint_cantidad">Cantidad</string>
+    <string name="hint_motivo">Motivo de la solicitud</string>
+    <string name="priority_label">Prioridad:</string>
+    <string name="priority_low">Baja</string>
+    <string name="priority_medium">Media</string>
+    <string name="priority_high">Alta</string>
+    <string name="priority_urgent">Urgente</string>
+    <string name="btn_solicitar">Enviar Solicitud</string>
+    <string name="error_no_comic_selected">Selecciona un comic</string>
+    <string name="error_invalid_quantity">Cantidad debe ser entre 1 y 10</string>
+    <string name="error_insufficient_stock">Stock insuficiente</string>
+    <string name="error_motivo_short">El motivo debe tener al menos 10 caracteres</string>
+    <string name="error_no_priority">Selecciona una prioridad</string>
+    <string name="solicitud_success">Solicitud enviada exitosamente</string>
+    <string name="solicitud_loading">Enviando solicitud...</string>
+    <string name="comic_preview">Vista previa del comic</string>
+    <string name="comic_price">Precio: $%.2f</string>
+    <string name="comic_stock">Stock: %d disponibles</string>
+    
+    <!-- Fragment Configuración -->
+    <string name="config_title">Mi Perfil</string>
+    <string name="config_subtitle">Información personal</string>
+    <string name="profile_info">Información Personal</string>
+    <string name="profile_stats">Estadísticas</string>
+    <string name="profile_settings">Configuraciones</string>
+    <string name="btn_edit_profile">Editar Perfil</string>
+    <string name="btn_save_profile">Guardar Cambios</string>
+    <string name="btn_cancel_edit">Cancelar</string>
+    <string name="stats_comics_favoritos">Comics Favoritos: %d</string>
+    <string name="stats_heroes_seguidos">Héroes Seguidos: %d</string>
+    <string name="stats_solicitudes">Solicitudes: %d</string>
+    <string name="stats_fecha_registro">Miembro desde: %s</string>
+    <string name="stats_ultimo_acceso">Último acceso: %s</string>
+    <string name="setting_notifications">Notificaciones</string>
+    <string name="setting_dark_theme">Tema Oscuro</string>
+    <string name="setting_sounds">Sonidos</string>
+    <string name="btn_logout_profile">Cerrar Sesión</string>
+    <string name="profile_updated">Perfil actualizado</string>
+    
+    <!-- Detalle Superhéroe -->
+    <string name="detail_title">Detalles del Superhéroe</string>
+    <string name="detail_powers">Poderes</string>
+    <string name="detail_comics">Comics Relacionados</string>
+    <string name="detail_universe">Universo: %s</string>
+    <string name="detail_popularity">Popularidad: %d%%</string>
+    <string name="btn_add_favorite">Agregar a Favoritos</string>
+    <string name="btn_remove_favorite">Quitar de Favoritos</string>
+    <string name="btn_share">Compartir</string>
+    <string name="share_hero_text">¡Mira este increíble superhéroe de Marvel: %s!</string>
+    
+    <!-- Diálogos -->
+    <string name="dialog_logout_title">Cerrar Sesión</string>
+    <string name="dialog_logout_message">¿Estás seguro que deseas cerrar sesión?</string>
+    <string name="dialog_exit_title">Salir</string>
+    <string name="dialog_exit_message">¿Estás seguro que deseas salir de la aplicación?</string>
+    <string name="dialog_solicitud_title">Confirmar Solicitud</string>
+    <string name="dialog_solicitud_message">Comic: %1$s\nCantidad: %2$d\nPrioridad: %3$s\n\n¿Confirmar solicitud?</string>
+    <string name="btn_confirm">Confirmar</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_yes">Sí</string>
+    <string name="btn_no">No</string>
+    
+    <!-- Mensajes generales -->
+    <string name="loading">Cargando...</string>
+    <string name="error_general">Ha ocurrido un error</string>
+    <string name="success">Éxito</string>
+    <string name="empty_state">No hay datos disponibles</string>
+    <string name="network_error">Error de conexión</string>
+    <string name="try_again">Intentar de nuevo</string>
+    
+    <!-- Fechas -->
+    <string name="date_format">dd/MM/yyyy</string>
+    <string name="datetime_format">dd/MM/yyyy HH:mm</string>
+    
+    <!-- Accesibilidad -->
+    <string name="content_description_hero_image">Imagen del superhéroe</string>
+    <string name="content_description_comic_image">Imagen del comic</string>
+    <string name="content_description_favorite_button">Botón de favorito</string>
+    <string name="content_description_search_button">Botón de búsqueda</string>
+    <string name="content_description_menu_button">Botón de menú</string>
+    <string name="content_description_back_button">Botón de retroceso</string>
+    
+    <!-- Nuevo string para el fragmento HelloBlankFragment -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

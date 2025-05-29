@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/fragmento1"
+        android:icon="@drawable/ic_home"
+        android:title="Ajustes" />
+
+    <item
+        android:id="@+id/fragmento2"
+        android:icon="@drawable/ic_buscar"
+        android:title="Noticias" />
+    <item
+        android:id="@+id/fragmento3"
+        android:title="Perfil"
+        android:icon="@drawable/ic_perfil"
+        />
+
+</menu>

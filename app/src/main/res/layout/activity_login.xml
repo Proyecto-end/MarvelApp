@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_background_gradient"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="32dp"
+        android:paddingVertical="24dp">
+
+        <!-- Contenedor Principal con Animación -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerPrincipal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:alpha="0.95"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Logo Marvel con Efecto -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="16dp"
+                app:strokeWidth="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/ivMarvelLogo"
+                    android:layout_width="240dp"
+                    android:layout_height="120dp"
+                    android:padding="16dp"
+                    android:src="@drawable/marvel_logo"
+                    android:scaleType="fitCenter"
+                    android:background="@drawable/logo_background_gradient" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Título Principal -->
+            <TextView
+                android:id="@+id/tvTitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="HERO ACCESS"
+                android:textColor="@color/marvel_white"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.15"
+                android:shadowColor="@color/marvel_red"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="8"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardLogo" />
+
+            <!-- Subtítulo -->
+            <TextView
+                android:id="@+id/tvSubtitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="✨ Accede al universo Marvel ✨"
+                android:textColor="@color/marvel_blue"
+                android:textSize="18sp"
+                android:textStyle="italic"
+                android:fontFamily="serif"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTitulo" />
+
+            <!-- Card Principal del Login -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardLogin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginHorizontal="8dp"
+                app:cardBackgroundColor="@color/marvel_dark_card"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="20dp"
+                app:strokeColor="@color/marvel_red"
+                app:strokeWidth="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvSubtitulo">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="32dp"
+                    android:background="@drawable/card_login_gradient">
+
+                    <!-- Icono de Usuario Decorativo -->
+                    <ImageView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="24dp"
+                        android:src="@drawable/ic_superhero"
+                        android:background="@drawable/circle_hero_background"
+                        android:padding="12dp"
+                        app:tint="@color/marvel_white" />
+
+                    <!-- Campo Usuario Mejorado -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilUsuario"
+                        style="@style/Widget.MarvelApp.TextInputLayout.Enhanced"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:hint="🦸‍♂️ Usuario / Email"
+                        app:startIconDrawable="@drawable/ic_person"
+                        app:startIconTint="@color/marvel_gold"
+                        app:hintTextColor="@color/marvel_blue"
+                        app:boxStrokeColor="@color/marvel_red"
+                        app:boxStrokeWidth="2dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etUsuario"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textEmailAddress"
+                            android:textColor="@color/marvel_white"
+                            android:textColorHint="@color/marvel_medium_text"
+                            android:textSize="16sp"
+                            android:paddingVertical="16dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Campo Contraseña Mejorado -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilContraseña"
+                        style="@style/Widget.MarvelApp.TextInputLayout.Enhanced"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="24dp"
+                        android:hint="🔐 Contraseña"
+                        app:endIconMode="password_toggle"
+                        app:endIconTint="@color/marvel_gold"
+                        app:startIconDrawable="@drawable/ic_lock"
+                        app:startIconTint="@color/marvel_gold"
+                        app:hintTextColor="@color/marvel_blue"
+                        app:boxStrokeColor="@color/marvel_red"
+                        app:boxStrokeWidth="2dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etContraseña"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"
+                            android:textColor="@color/marvel_white"
+                            android:textColorHint="@color/marvel_medium_text"
+                            android:textSize="16sp"
+                            android:paddingVertical="16dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Botón Iniciar Sesión Mejorado -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnIniciarSesion"
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:layout_marginTop="8dp"
+                        android:text="⚡ INICIAR SESIÓN ⚡"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/marvel_white"
+                        app:backgroundTint="@color/marvel_red"
+                        app:cornerRadius="16dp"
+                        app:elevation="8dp"
+                        app:icon="@drawable/ic_login"
+                        app:iconGravity="textStart"
+                        app:iconTint="@color/marvel_white"
+                        app:iconSize="24dp" />
+
+                    <!-- Mensaje de Error Mejorado -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardError"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:visibility="gone"
+                        app:cardBackgroundColor="@color/marvel_error_bg"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="@color/marvel_error"
+                        app:strokeWidth="1dp">
+
+                        <TextView
+                            android:id="@+id/tvError"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp"
+                            android:gravity="center"
+                            android:text=""
+                            android:textColor="@color/marvel_error"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:drawableStart="@drawable/ic_error"
+                            android:drawablePadding="8dp"
+                            android:drawableTint="@color/marvel_error" />
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Olvidar Contraseña Mejorado -->
+                    <TextView
+                        android:id="@+id/tvOlvidarPassword"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_gravity="center"
+                        android:text="🔑 ¿Olvidaste tu contraseña?"
+                        android:textColor="@color/marvel_blue"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="@drawable/ripple_button_background"
+                        android:padding="12dp"
+                        android:drawableEnd="@drawable/ic_arrow_forward"
+                        android:drawablePadding="8dp"
+                        android:drawableTint="@color/marvel_blue" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Divider Decorativo -->
+            <LinearLayout
+                android:id="@+id/dividerContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="@id/cardLogin"
+                app:layout_constraintStart_toStartOf="@id/cardLogin"
+                app:layout_constraintTop_toBottomOf="@id/cardLogin">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/gradient_divider_left" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:text="MARVEL"
+                    android:textColor="@color/marvel_gold"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/badge_background"
+                    android:padding="8dp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/gradient_divider_right" />
+
+            </LinearLayout>
+
+            <!-- Sección de Registro Mejorada -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardRegistro"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@color/marvel_light_card"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:strokeColor="@color/marvel_blue"
+                app:strokeWidth="1dp"
+                app:layout_constraintEnd_toEndOf="@id/cardLogin"
+                app:layout_constraintStart_toStartOf="@id/cardLogin"
+                app:layout_constraintTop_toBottomOf="@id/dividerContainer">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tvRegistroTexto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="¿No tienes cuenta? "
+                        android:textColor="@color/marvel_medium_text"
+                        android:textSize="15sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRegistro"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🚀 REGÍSTRATE"
+                        android:textColor="@color/marvel_blue"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        app:cornerRadius="12dp"
+                        app:rippleColor="@color/marvel_blue_light" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Loading Animation Mejorada -->
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loadingAnimation"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:visibility="gone"
+                android:elevation="20dp"
+                app:layout_constraintBottom_toBottomOf="@id/btnIniciarSesion"
+                app:layout_constraintEnd_toEndOf="@id/btnIniciarSesion"
+                app:layout_constraintStart_toStartOf="@id/btnIniciarSesion"
+                app:layout_constraintTop_toTopOf="@id/btnIniciarSesion"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/loading_animation" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView> 

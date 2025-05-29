@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="20dp"
+    android:viewportWidth="40"
+    android:viewportHeight="20">
+    
+    <!-- Fondo rojo de Marvel -->
+    <path
+        android:fillColor="@color/marvel_red"
+        android:pathData="M2,2 L38,2 L38,18 L2,18 Z"/>
+    
+    <!-- Texto M simplificado -->
+    <path
+        android:fillColor="@color/marvel_white"
+        android:pathData="M6,6 L8,6 L10,12 L12,6 L14,6 L14,14 L12,14 L12,8 L10,14 L8,14 L6,8 L6,14 L4,14 L4,6 Z"/>
+    
+    <!-- Indicador Marvel -->
+    <path
+        android:fillColor="@color/marvel_white"
+        android:pathData="M16,6 L18,6 L18,14 L16,14 Z"/>
+    
+    <path
+        android:fillColor="@color/marvel_white"
+        android:pathData="M20,6 L22,6 L22,14 L20,14 Z"/>
+    
+    <path
+        android:fillColor="@color/marvel_white"
+        android:pathData="M24,6 L26,6 L26,14 L24,14 Z"/>
+    
+</vector> 

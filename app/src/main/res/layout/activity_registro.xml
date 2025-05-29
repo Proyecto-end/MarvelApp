@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/marvel_black"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+
+        <!-- Header -->
+        <ImageView
+            android:id="@+id/ivMarvelLogo"
+            android:layout_width="150dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/marvel_logo"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="ÚNETE A LOS HÉROES"
+            android:textColor="@color/marvel_white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivMarvelLogo" />
+
+        <!-- Card Container -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardRegistro"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardBackgroundColor="@color/marvel_medium_gray"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="12dp"
+            app:strokeColor="@color/marvel_blue"
+            app:strokeWidth="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitulo">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <!-- Campo Nombre -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilNombre"
+                    style="@style/Widget.MarvelApp.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Nombre completo"
+                    app:startIconDrawable="@drawable/ic_person"
+                    app:startIconTint="@color/marvel_blue">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etNombre"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName|textCapWords"
+                        android:textColor="@color/marvel_white"
+                        android:textColorHint="@color/marvel_medium_text" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Campo Email -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilCorreo"
+                    style="@style/Widget.MarvelApp.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Correo electrónico"
+                    app:startIconDrawable="@drawable/ic_email"
+                    app:startIconTint="@color/marvel_blue">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etCorreo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/marvel_white"
+                        android:textColorHint="@color/marvel_medium_text" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Campo Contraseña -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilContraseña"
+                    style="@style/Widget.MarvelApp.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Contraseña"
+                    app:endIconMode="password_toggle"
+                    app:endIconTint="@color/marvel_blue"
+                    app:startIconDrawable="@drawable/ic_lock"
+                    app:startIconTint="@color/marvel_blue">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etContraseña"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textColor="@color/marvel_white"
+                        android:textColorHint="@color/marvel_medium_text" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Campo Confirmar Contraseña -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilConfirmarContraseña"
+                    style="@style/Widget.MarvelApp.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Confirmar contraseña"
+                    app:endIconMode="password_toggle"
+                    app:endIconTint="@color/marvel_blue"
+                    app:startIconDrawable="@drawable/ic_lock"
+                    app:startIconTint="@color/marvel_blue">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etConfirmarContraseña"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textColor="@color/marvel_white"
+                        android:textColorHint="@color/marvel_medium_text" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Campo Fecha Nacimiento -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilFechaNacimiento"
+                    style="@style/Widget.MarvelApp.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Fecha de nacimiento"
+                    app:startIconDrawable="@drawable/ic_calendar"
+                    app:startIconTint="@color/marvel_blue"
+                    app:endIconDrawable="@drawable/ic_calendar"
+                    app:endIconTint="@color/marvel_blue"
+                    app:endIconMode="custom">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFechaNacimiento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:inputType="none"
+                        android:textColor="@color/marvel_white"
+                        android:textColorHint="@color/marvel_medium_text"
+                        android:hint="DD/MM/AAAA" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Términos y Condiciones -->
+                <CheckBox
+                    android:id="@+id/cbTerminos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Acepto los términos y condiciones"
+                    android:textColor="@color/marvel_light_text"
+                    android:textSize="14sp"
+                    android:buttonTint="@color/marvel_blue" />
+
+                <!-- Botón Registrarse -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRegistrarse"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="24dp"
+                    android:text="CREAR CUENTA"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/marvel_blue"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_person_add"
+                    app:iconGravity="textStart"
+                    app:iconTint="@color/marvel_white" />
+
+                <!-- Mensaje de Error -->
+                <TextView
+                    android:id="@+id/tvError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="@color/marvel_error"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Botón Volver Login -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnVolverLogin"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="¿Ya tienes cuenta? Inicia Sesión"
+            android:textColor="@color/marvel_red"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardRegistro" />
+
+        <!-- Loading Animation -->
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingAnimation"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/btnRegistrarse"
+            app:layout_constraintEnd_toEndOf="@id/btnRegistrarse"
+            app:layout_constraintStart_toStartOf="@id/btnRegistrarse"
+            app:layout_constraintTop_toTopOf="@id/btnRegistrarse"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/loading_animation" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView> 

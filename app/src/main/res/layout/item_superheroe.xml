@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/marvel_medium_gray"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp"
+    app:strokeColor="@color/marvel_light_gray"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Imagen del Superhéroe -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:cardCornerRadius="40dp"
+            app:cardElevation="4dp"
+            app:strokeColor="@color/marvel_red"
+            app:strokeWidth="2dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/ivSuperheroe"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="@color/marvel_light_gray"
+                tools:src="@drawable/marvel_logo" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Indicador de Estado -->
+        <View
+            android:id="@+id/viewEstado"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:background="@drawable/circle_indicator"
+            android:backgroundTint="@color/marvel_success"
+            app:layout_constraintEnd_toEndOf="@id/cardImage"
+            app:layout_constraintTop_toTopOf="@id/cardImage" />
+
+        <!-- Nombre del Superhéroe -->
+        <TextView
+            android:id="@+id/tvNombre"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/marvel_white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toStartOf="@id/ivFavorite"
+            app:layout_constraintStart_toEndOf="@id/cardImage"
+            app:layout_constraintTop_toTopOf="@id/cardImage"
+            tools:text="Spider-Man" />
+
+        <!-- Universo -->
+        <TextView
+            android:id="@+id/tvUniverso"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/marvel_blue"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="@drawable/background_chip"
+            android:backgroundTint="@color/marvel_blue"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="@id/tvNombre"
+            app:layout_constraintTop_toBottomOf="@id/tvNombre"
+            tools:text="Marvel 616" />
+
+        <!-- Descripción -->
+        <TextView
+            android:id="@+id/tvDescripcion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/marvel_light_text"
+            android:textSize="14sp"
+            android:lineSpacingExtra="2dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toEndOf="@id/tvNombre"
+            app:layout_constraintStart_toStartOf="@id/tvNombre"
+            app:layout_constraintTop_toBottomOf="@id/tvUniverso"
+            tools:text="Un joven que obtuvo poderes arácnidos después de ser picado por una araña radiactiva." />
+
+        <!-- Botón Favorito -->
+        <ImageView
+            android:id="@+id/ivFavorite"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_favorite_border"
+            android:tint="@color/marvel_medium_text"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/cardImage" />
+
+        <!-- Divider -->
+        <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/marvel_light_gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardImage" />
+
+        <!-- Footer con información adicional -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider">
+
+            <!-- Popularidad -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_star"
+                android:tint="@color/marvel_gold" />
+
+            <ProgressBar
+                android:id="@+id/pb_popularidad"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="48dp"
+                android:layout_height="4dp"
+                android:layout_marginStart="4dp"
+                android:progressTint="@color/marvel_gold"
+                android:progressBackgroundTint="@color/marvel_light_gray"
+                android:max="100"
+                android:progress="85" />
+
+            <TextView
+                android:id="@+id/tvPopularidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="@color/marvel_gold"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="4.8" />
+
+            <!-- Spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Comics -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_comic"
+                android:tint="@color/marvel_blue" />
+
+            <TextView
+                android:id="@+id/tvComicsCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="@color/marvel_blue"
+                android:textSize="12sp"
+                tools:text="250+ comics" />
+
+            <!-- Spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Botón Ver Más -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVerMas"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="Ver más"
+                android:textColor="@color/marvel_red"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:minHeight="32dp"
+                app:icon="@drawable/ic_arrow_forward"
+                app:iconGravity="end"
+                app:iconSize="12dp"
+                app:iconTint="@color/marvel_red" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView> 
