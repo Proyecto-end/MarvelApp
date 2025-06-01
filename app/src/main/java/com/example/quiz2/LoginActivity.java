@@ -7,18 +7,31 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.airbnb.lottie.LottieAnimationView;
+import com.example.quiz2.api.AuthResponse;
+import com.example.quiz2.api.AuthService;
+import com.example.quiz2.api.LoginRequest;
+import com.example.quiz2.api.AuthConfig;
+import com.google.android.material.textfield.TextInputLayout;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
-
-    private EditText etUsuario, etPassword;
-    private Button btnLogin, btnRegistro;
-    private TextView tvOlvidarPassword;
-    private LottieAnimationView lottieLoading;
+    private TextInputLayout emailLayout;
+    private TextInputLayout passwordLayout;
+    private EditText emailInput;
+    private EditText passwordInput;
+    private Button loginButton;
+    private Button registerButton;
+    private ProgressBar loadingAnimation;
     private SharedPreferences sharedPreferences;
+    private AuthService authService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,117 +39,129 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         initializeViews();
-        setupClickListeners();
-        
+        setupListeners();
         sharedPreferences = getSharedPreferences("MarvelUserPrefs", MODE_PRIVATE);
         
-        // Verificar si ya hay un usuario logueado
-        checkUserSession();
+        // Verificar si hay un usuario registrado
+        checkRegisteredUser();
     }
 
     private void initializeViews() {
-        etUsuario = findViewById(R.id.etUsuario);
-        etPassword = findViewById(R.id.etContraseña);
-        btnLogin = findViewById(R.id.btnIniciarSesion);
-        btnRegistro = findViewById(R.id.btnRegistro);
-        tvOlvidarPassword = findViewById(R.id.tvOlvidarPassword);
-        lottieLoading = findViewById(R.id.loadingAnimation);
+        emailLayout = findViewById(R.id.emailLayout);
+        passwordLayout = findViewById(R.id.passwordLayout);
+        emailInput = findViewById(R.id.emailInput);
+        passwordInput = findViewById(R.id.passwordInput);
+        loginButton = findViewById(R.id.btnIniciarSesion);
+        registerButton = findViewById(R.id.btnRegistro);
+        loadingAnimation = findViewById(R.id.loadingAnimation);
+        
+        if (loadingAnimation != null) {
+            loadingAnimation.setVisibility(View.GONE);
+        }
     }
 
-    private void setupClickListeners() {
-        btnLogin.setOnClickListener(v -> validateAndLogin());
-        
-        btnRegistro.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, RegistroActivity.class));
-        });
-        
-        tvOlvidarPassword.setOnClickListener(v -> {
-            Toast.makeText(this, "Funcionalidad de recuperación de contraseña próximamente", Toast.LENGTH_SHORT).show();
+    private void setupListeners() {
+        loginButton.setOnClickListener(v -> validateAndLogin());
+        registerButton.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, RegistroActivity.class);
+            startActivity(intent);
         });
     }
 
     private void validateAndLogin() {
-        String usuario = etUsuario.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-
         // Limpiar errores previos
-        etUsuario.setError(null);
-        etPassword.setError(null);
+        emailLayout.setError(null);
+        passwordLayout.setError(null);
+
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
 
         boolean isValid = true;
 
-        if (TextUtils.isEmpty(usuario)) {
-            etUsuario.setError("El usuario es requerido");
+        // Validar campos vacíos
+        if (TextUtils.isEmpty(email)) {
+            emailLayout.setError("El correo es requerido");
             isValid = false;
         }
 
         if (TextUtils.isEmpty(password)) {
-            etPassword.setError("La contraseña es requerida");
+            passwordLayout.setError("La contraseña es requerida");
             isValid = false;
-        } else if (password.length() < 6) {
-            etPassword.setError("La contraseña debe tener al menos 6 caracteres");
+        }
+
+        // Validar formato de email
+        if (!TextUtils.isEmpty(email) && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailLayout.setError("Ingrese un correo válido");
+            isValid = false;
+        }
+
+        // Validar longitud de contraseña
+        if (!TextUtils.isEmpty(password) && password.length() < 6) {
+            passwordLayout.setError("La contraseña debe tener al menos 6 caracteres");
             isValid = false;
         }
 
         if (isValid) {
-            performLogin(usuario, password);
+            performLogin(email, password);
         }
     }
 
-    private void performLogin(String usuario, String password) {
-        // Mostrar animación de carga
-        lottieLoading.setVisibility(View.VISIBLE);
-        btnLogin.setEnabled(false);
+    private void performLogin(String email, String password) {
+        // Mostrar progreso
+        setLoadingVisibility(true);
+        loginButton.setEnabled(false);
 
-        // Simular proceso de login (aquí iría la validación real)
-        new android.os.Handler().postDelayed(() -> {
-            // Validar credenciales (por ahora usando credenciales predeterminadas o verificando registro)
-            if (validateCredentials(usuario, password)) {
-                // Guardar sesión
-                saveUserSession(usuario);
+        LoginRequest request = new LoginRequest(email, password);
+        AuthConfig.getAuthService().login(request).enqueue(new Callback<AuthResponse>() {
+            @Override
+            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                setLoadingVisibility(false);
                 
-                // Ir a MainActivity
-                Intent intent = new Intent(LoginActivity.this, MainMarvelActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            } else {
-                Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                if (response.isSuccessful() && response.body() != null) {
+                    AuthResponse authResponse = response.body();
+                    if (authResponse.isSuccess()) {
+                        // Guardar token y datos del usuario
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean("isLoggedIn", true);
+                        editor.putString("authToken", authResponse.getToken());
+                        editor.putString("currentUser", email);
+                        editor.putString("userName", authResponse.getUser().getName());
+                        editor.putString("userEmail", authResponse.getUser().getEmail());
+                        editor.apply();
+
+                        // Ir a la pantalla principal
+                        Intent intent = new Intent(LoginActivity.this, MainMarvelActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, 
+                            authResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(LoginActivity.this, 
+                        "Error en el servidor", Toast.LENGTH_SHORT).show();
+                }
             }
-            
-            lottieLoading.setVisibility(View.GONE);
-            btnLogin.setEnabled(true);
-        }, 2000);
-    }
 
-    private boolean validateCredentials(String usuario, String password) {
-        // Verificar credenciales predeterminadas de admin
-        if (usuario.equals("admin") && password.equals("123456")) {
-            return true;
-        }
-        
-        // Verificar credenciales de usuarios registrados
-        String savedPassword = sharedPreferences.getString("password_" + usuario, null);
-        return savedPassword != null && savedPassword.equals(password);
-    }
-
-    private void saveUserSession(String usuario) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("isLoggedIn", true);
-        editor.putString("currentUser", usuario);
-        editor.putLong("loginTime", System.currentTimeMillis());
-        editor.apply();
-    }
-
-    private void checkUserSession() {
-        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
-        if (isLoggedIn) {
-            String currentUser = sharedPreferences.getString("currentUser", "");
-            if (!currentUser.isEmpty()) {
-                // Usuario ya logueado, ir directamente a MainActivity
-                startActivity(new Intent(LoginActivity.this, MainMarvelActivity.class));
-                finish();
+            @Override
+            public void onFailure(Call<AuthResponse> call, Throwable t) {
+                setLoadingVisibility(false);
+                Toast.makeText(LoginActivity.this, 
+                    "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
+        });
+    }
+
+    private void checkRegisteredUser() {
+        String registeredEmail = getIntent().getStringExtra("registered_email");
+        if (registeredEmail != null) {
+            emailInput.setText(registeredEmail);
+            Toast.makeText(this, "Registro exitoso. Por favor inicie sesión.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void setLoadingVisibility(boolean visible) {
+        if (loadingAnimation == null) return;
+        loadingAnimation.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 } 

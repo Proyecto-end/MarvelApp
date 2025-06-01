@@ -209,3 +209,64 @@ Desarrollado con ❤️ para Disney Marvel Studios
 ---
 
 **Marvel Studios App** - Explora el universo de superhéroes en tu dispositivo Android 
+
+## Configuración del Servidor
+
+### Requisitos Previos
+- Node.js instalado (versión 14 o superior)
+- npm (incluido con Node.js)
+
+### Pasos para Configurar el Servidor
+
+1. **Instalar Dependencias**
+   ```bash
+   cd server
+   npm install
+   ```
+
+2. **Configurar la Dirección IP**
+   - Abre una terminal y ejecuta `ipconfig` (Windows) o `ifconfig` (Linux/Mac)
+   - Busca tu dirección IP local (generalmente comienza con 192.168.x.x)
+   - Abre el archivo `app/src/main/java/com/example/quiz2/api/AuthConfig.java`
+   - Actualiza la variable `BASE_URL` con tu dirección IP:
+     ```java
+     public static final String BASE_URL = "http://TU_IP_LOCAL:3000/api/";
+     ```
+
+3. **Iniciar el Servidor**
+   ```bash
+   cd server
+   node server.js
+   ```
+   Deberías ver el mensaje: "Servidor corriendo en http://localhost:3000"
+
+### Solución de Problemas Comunes
+
+1. **Error: Puerto 3000 en uso**
+   - Si ves el error "EADDRINUSE: address already in use 0.0.0.0:3000"
+   - El servidor ya está corriendo o el puerto está ocupado
+   - Para detener el servidor existente:
+     - Windows: `netstat -ano | findstr :3000` y luego `taskkill /PID <PID> /F`
+     - Linux/Mac: `lsof -i :3000` y luego `kill -9 <PID>`
+
+2. **Error de Conexión en la App**
+   - Asegúrate de que el dispositivo Android y el servidor estén en la misma red WiFi
+   - Verifica que la dirección IP en `AuthConfig.java` sea correcta
+   - Confirma que el servidor está corriendo (deberías ver el mensaje de inicio)
+
+3. **Problemas con el Registro/Login**
+   - El servidor usa almacenamiento en memoria, por lo que los usuarios se pierden al reiniciar
+   - Si reinicias el servidor, necesitarás registrarte nuevamente
+   - Asegúrate de usar un email válido y contraseña de al menos 6 caracteres
+
+### Notas Importantes
+- El servidor debe estar corriendo para que la aplicación funcione
+- La dirección IP debe ser accesible desde el dispositivo Android
+- Los usuarios se almacenan en memoria y se pierden al reiniciar el servidor
+- Para desarrollo, el servidor acepta conexiones HTTP (no HTTPS)
+
+### Prueba de Conexión
+Para verificar que el servidor está funcionando:
+1. Abre un navegador web
+2. Visita `http://TU_IP_LOCAL:3000/api/auth/register`
+3. Deberías ver un mensaje indicando que el método GET no está permitido (esto es normal, ya que la ruta espera POST) 

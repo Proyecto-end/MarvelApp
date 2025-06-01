@@ -120,22 +120,17 @@
 
                     <!-- Campo Usuario Mejorado -->
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilUsuario"
-                        style="@style/Widget.MarvelApp.TextInputLayout.Enhanced"
+                        android:id="@+id/emailLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
-                        android:hint="🦸‍♂️ Usuario / Email"
-                        app:startIconDrawable="@drawable/ic_person"
-                        app:startIconTint="@color/marvel_gold"
-                        app:hintTextColor="@color/marvel_blue"
-                        app:boxStrokeColor="@color/marvel_red"
-                        app:boxStrokeWidth="2dp">
+                        android:layout_marginBottom="16dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etUsuario"
+                            android:id="@+id/emailInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:hint="Correo electrónico"
                             android:inputType="textEmailAddress"
                             android:textColor="@color/marvel_white"
                             android:textColorHint="@color/marvel_medium_text"
@@ -146,24 +141,18 @@
 
                     <!-- Campo Contraseña Mejorado -->
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilContraseña"
-                        style="@style/Widget.MarvelApp.TextInputLayout.Enhanced"
+                        android:id="@+id/passwordLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="24dp"
-                        android:hint="🔐 Contraseña"
-                        app:endIconMode="password_toggle"
-                        app:endIconTint="@color/marvel_gold"
-                        app:startIconDrawable="@drawable/ic_lock"
-                        app:startIconTint="@color/marvel_gold"
-                        app:hintTextColor="@color/marvel_blue"
-                        app:boxStrokeColor="@color/marvel_red"
-                        app:boxStrokeWidth="2dp">
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:passwordToggleEnabled="true">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etContraseña"
+                            android:id="@+id/passwordInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:hint="Contraseña"
                             android:inputType="textPassword"
                             android:textColor="@color/marvel_white"
                             android:textColorHint="@color/marvel_medium_text"
@@ -324,20 +313,14 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Loading Animation Mejorada -->
-            <com.airbnb.lottie.LottieAnimationView
+            <!-- Loading Animation -->
+            <ProgressBar
                 android:id="@+id/loadingAnimation"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
                 android:visibility="gone"
-                android:elevation="20dp"
-                app:layout_constraintBottom_toBottomOf="@id/btnIniciarSesion"
-                app:layout_constraintEnd_toEndOf="@id/btnIniciarSesion"
-                app:layout_constraintStart_toStartOf="@id/btnIniciarSesion"
-                app:layout_constraintTop_toTopOf="@id/btnIniciarSesion"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true"
-                app:lottie_rawRes="@raw/loading_animation" />
+                android:indeterminateTint="@color/marvel_red" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

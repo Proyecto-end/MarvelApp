@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -19,7 +20,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.airbnb.lottie.LottieAnimationView;
 import com.example.quiz2.clases.Comic;
 import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
@@ -36,14 +36,15 @@ public class SolicitarFragment extends Fragment {
     private Button btnSolicitar;
     private ImageView ivPreviewComic;
     private TextView tvTituloPreview, tvDescripcionPreview;
-    private LottieAnimationView lottieLoading;
     private View layoutPreview;
+    private ProgressBar progressBar;
 
     private List<Comic> comicsDisponibles;
     private ArrayAdapter<String> spinnerAdapter;
     private Comic comicSeleccionado;
     private String currentUser;
     private SharedPreferences sharedPreferences;
+    private boolean isFragmentActive = false;
 
     @Nullable
     @Override
@@ -59,8 +60,21 @@ public class SolicitarFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        isFragmentActive = true;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        isFragmentActive = false;
+        progressBar = null;
+    }
+
     private void initializeViews(View view) {
-        spinnerComics = view.findViewById(R.id.spinnerComics);
+        spinnerComics = view.findViewById(R.id.comicSpinner);
         etCantidad = view.findViewById(R.id.etCantidad);
         etMotivo = view.findViewById(R.id.etMotivo);
         rgPrioridad = view.findViewById(R.id.rgPrioridad);
@@ -68,8 +82,8 @@ public class SolicitarFragment extends Fragment {
         ivPreviewComic = view.findViewById(R.id.ivComicPreview);
         tvTituloPreview = view.findViewById(R.id.tvComicTitulo);
         tvDescripcionPreview = view.findViewById(R.id.tvComicDescripcion);
-        lottieLoading = view.findViewById(R.id.loadingAnimation);
         layoutPreview = view.findViewById(R.id.cardPreview);
+        progressBar = view.findViewById(R.id.loadingAnimation);
     }
 
     private void setupUserInfo() {
@@ -84,7 +98,7 @@ public class SolicitarFragment extends Fragment {
         List<String> titulosComics = new ArrayList<>();
         titulosComics.add("Seleccionar comic...");
         
-        spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, titulosComics);
+        spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, titulosComics);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerComics.setAdapter(spinnerAdapter);
 
@@ -112,14 +126,21 @@ public class SolicitarFragment extends Fragment {
         btnSolicitar.setOnClickListener(v -> validateAndSubmitRequest());
     }
 
+    private void setLoadingVisibility(boolean visible) {
+        if (progressBar == null || !isAdded()) return;
+        progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     private void loadComics() {
-        lottieLoading.setVisibility(View.VISIBLE);
+        setLoadingVisibility(true);
         
         // Simular carga de comics
         new android.os.Handler().postDelayed(() -> {
+            if (getActivity() == null || !isAdded()) return;
+            
             comicsDisponibles = createMarvelComics();
             updateSpinner();
-            lottieLoading.setVisibility(View.GONE);
+            setLoadingVisibility(false);
         }, 1000);
     }
 
@@ -218,6 +239,8 @@ public class SolicitarFragment extends Fragment {
     }
 
     private void updateSpinner() {
+        if (!isAdded()) return;
+        
         List<String> titulos = new ArrayList<>();
         titulos.add("Seleccionar comic...");
         
@@ -232,6 +255,8 @@ public class SolicitarFragment extends Fragment {
     }
 
     private void showComicPreview(Comic comic) {
+        if (!isAdded()) return;
+        
         layoutPreview.setVisibility(View.VISIBLE);
         
         tvTituloPreview.setText(comic.getTitulo());
@@ -250,12 +275,15 @@ public class SolicitarFragment extends Fragment {
     }
 
     private void hideComicPreview() {
+        if (!isAdded()) return;
         layoutPreview.setVisibility(View.GONE);
     }
 
     private void validateAndSubmitRequest() {
+        if (!isAdded()) return;
+        
         if (comicSeleccionado == null) {
-            Toast.makeText(getContext(), "Por favor selecciona un comic", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Por favor selecciona un comic", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -274,7 +302,7 @@ public class SolicitarFragment extends Fragment {
         }
 
         if (prioridadId == -1) {
-            Toast.makeText(getContext(), "Selecciona una prioridad", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Selecciona una prioridad", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -293,15 +321,19 @@ public class SolicitarFragment extends Fragment {
     }
 
     private void submitRequest(String cantidad, String motivo, int prioridadId) {
-        RadioButton radioButton = getView().findViewById(prioridadId);
+        if (!isAdded()) return;
+        
+        RadioButton radioButton = requireView().findViewById(prioridadId);
         String prioridad = radioButton.getText().toString();
 
         // Simular envío de solicitud
-        lottieLoading.setVisibility(View.VISIBLE);
+        setLoadingVisibility(true);
         
         new android.os.Handler().postDelayed(() -> {
+            if (!isAdded()) return;
+            
             saveSolicitud(cantidad, motivo, prioridad);
-            lottieLoading.setVisibility(View.GONE);
+            setLoadingVisibility(false);
             showSuccessMessage();
             clearForm();
         }, 1500);
@@ -324,6 +356,8 @@ public class SolicitarFragment extends Fragment {
     }
 
     private void showSuccessMessage() {
+        if (!isAdded()) return;
+        
         new androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setTitle("¡Solicitud Exitosa!")
             .setMessage("Tu solicitud ha sido registrada correctamente. Te notificaremos cuando esté lista.")
@@ -333,6 +367,8 @@ public class SolicitarFragment extends Fragment {
     }
 
     private void clearForm() {
+        if (!isAdded()) return;
+        
         spinnerComics.setSelection(0);
         etCantidad.setText("");
         etMotivo.setText("");

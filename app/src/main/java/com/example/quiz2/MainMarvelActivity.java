@@ -3,6 +3,7 @@ package com.example.quiz2;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -13,9 +14,17 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.example.quiz2.api.ApiConfig;
+import com.example.quiz2.api.MarvelApiClient;
+import com.example.quiz2.api.MarvelResponse;
+import com.example.quiz2.models.Superhero;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainMarvelActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainMarvelActivity";
     private BottomNavigationView bottomNavigation;
     private Toolbar toolbar;
     private SharedPreferences sharedPreferences;
@@ -44,6 +53,38 @@ public class MainMarvelActivity extends AppCompatActivity {
             loadFragment(new HomeFragment());
             bottomNavigation.setSelectedItemId(R.id.nav_home);
         }
+
+        // Ejemplo de llamada a la API
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String hash = MarvelApiClient.generateHash(timestamp);
+
+        MarvelApiClient.getInstance()
+            .getApiService()
+            .getCharacters(ApiConfig.PUBLIC_KEY, timestamp, hash, 20, 0)
+            .enqueue(new Callback<MarvelResponse>() {
+                @Override
+                public void onResponse(Call<MarvelResponse> call, Response<MarvelResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        MarvelResponse.Data data = response.body().getData();
+                        if (data != null && data.getResults() != null) {
+                            for (MarvelResponse.Character character : data.getResults()) {
+                                Log.d(TAG, "Personaje: " + character.getName());
+                                Log.d(TAG, "Descripción: " + character.getDescription());
+                                if (character.getThumbnail() != null) {
+                                    Log.d(TAG, "Imagen: " + character.getThumbnail().getFullPath());
+                                }
+                            }
+                        }
+                    } else {
+                        Log.e(TAG, "Error en la respuesta: " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MarvelResponse> call, Throwable t) {
+                    Log.e(TAG, "Error en la llamada: " + t.getMessage());
+                }
+            });
     }
 
     private void initializeViews() {

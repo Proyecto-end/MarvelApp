@@ -13,10 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.squareup.picasso.Picasso;
+import com.example.quiz2.api.MarvelResponse;
 import java.util.Arrays;
 import java.util.List;
 
 public class DetalleSuperheroActivity extends AppCompatActivity {
+
+    public static final String EXTRA_HERO = "extra_hero";
 
     private Toolbar toolbar;
     private ImageView ivSuperheroeFoto;
@@ -34,7 +37,7 @@ public class DetalleSuperheroActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detalle_superheroe);
+        setContentView(R.layout.activity_detalle_superhero);
         
         initializeViews();
         setupToolbar();
@@ -44,9 +47,9 @@ public class DetalleSuperheroActivity extends AppCompatActivity {
 
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
-        ivSuperheroeFoto = findViewById(R.id.ivHeroImage);
-        tvSuperheroeName = findViewById(R.id.tvHeroName);
-        tvSuperheroDescription = findViewById(R.id.tvDescription);
+        ivSuperheroeFoto = findViewById(R.id.heroImage);
+        tvSuperheroeName = findViewById(R.id.heroName);
+        tvSuperheroDescription = findViewById(R.id.heroDescription);
         chipUniverso = findViewById(R.id.chipUniverso);
         chipEstado = findViewById(R.id.chipEstado);
         tvPopularidadTexto = findViewById(R.id.tvPopularidad);
@@ -62,55 +65,52 @@ public class DetalleSuperheroActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setTitle("Detalle del Superhéroe");
         }
         
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     private void loadSuperheroData() {
-        // Obtener datos del Intent
-        String heroName = getIntent().getStringExtra("superheroe_nombre");
-        String heroDescription = getIntent().getStringExtra("superheroe_descripcion");
-        String heroImage = getIntent().getStringExtra("superheroe_imagen");
-        String heroUniverso = getIntent().getStringExtra("superheroe_universo");
-        int heroPopularidad = getIntent().getIntExtra("superheroe_popularidad", 0);
-        boolean heroActivo = getIntent().getBooleanExtra("superheroe_activo", true);
-        
-        superheroeName = heroName;
-        
-        // Configurar título del toolbar
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(heroName);
+        MarvelResponse.Character hero = (MarvelResponse.Character) getIntent().getSerializableExtra(EXTRA_HERO);
+        if (hero != null) {
+            superheroeName = hero.getName();
+            
+            // Configurar título del toolbar
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(hero.getName());
+            }
+            
+            // Configurar datos básicos
+            tvSuperheroeName.setText(hero.getName());
+            tvSuperheroDescription.setText(hero.getDescription());
+            chipUniverso.setText(hero.getUniverse());
+            
+            // Configurar estado
+            String estado = hero.isActive() ? "Activo" : "Inactivo";
+            chipEstado.setText(estado);
+            chipEstado.setChipBackgroundColorResource(
+                hero.isActive() ? R.color.verde_activo : R.color.rojo_inactivo);
+            
+            // Configurar popularidad
+            pbPopularidad.setProgress(hero.getPopularity());
+            tvPopularidadTexto.setText(hero.getPopularity() + "% Popularidad");
+            
+            // Cargar imagen
+            if (hero.getThumbnail() != null) {
+                String imageUrl = hero.getThumbnail().getFullPath();
+                Picasso.get()
+                    .load(imageUrl)
+                    .placeholder(R.drawable.placeholder_hero)
+                    .error(R.drawable.error_hero)
+                    .into(ivSuperheroeFoto);
+            } else {
+                ivSuperheroeFoto.setImageResource(R.drawable.placeholder_hero);
+            }
+            
+            // Configurar listas según el héroe
+            setupHeroSpecificData(hero.getName());
         }
-        
-        // Configurar datos básicos
-        tvSuperheroeName.setText(heroName);
-        tvSuperheroDescription.setText(heroDescription);
-        chipUniverso.setText(heroUniverso);
-        
-        // Configurar estado
-        String estado = heroActivo ? "Activo" : "Inactivo";
-        chipEstado.setText(estado);
-        chipEstado.setChipBackgroundColorResource(
-            heroActivo ? R.color.verde_activo : R.color.rojo_inactivo);
-        
-        // Configurar popularidad
-        pbPopularidad.setProgress(heroPopularidad);
-        tvPopularidadTexto.setText(heroPopularidad + "% Popularidad");
-        
-        // Cargar imagen
-        if (heroImage != null && !heroImage.isEmpty()) {
-            Picasso.get()
-                .load(heroImage)
-                .placeholder(R.drawable.placeholder_hero)
-                .error(R.drawable.error_hero)
-                .into(ivSuperheroeFoto);
-        } else {
-            ivSuperheroeFoto.setImageResource(R.drawable.placeholder_hero);
-        }
-        
-        // Configurar listas según el héroe
-        setupHeroSpecificData(heroName);
     }
 
     private void setupHeroSpecificData(String heroName) {

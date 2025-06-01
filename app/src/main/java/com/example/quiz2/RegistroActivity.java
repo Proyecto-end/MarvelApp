@@ -5,31 +5,42 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Patterns;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.airbnb.lottie.LottieAnimationView;
-import com.example.quiz2.clases.Usuario;
+import com.example.quiz2.api.ApiConfig;
+import com.example.quiz2.api.AuthResponse;
+import com.example.quiz2.api.AuthService;
+import com.example.quiz2.api.RegisterRequest;
+import com.example.quiz2.api.AuthConfig;
+import com.google.android.material.textfield.TextInputLayout;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RegistroActivity extends AppCompatActivity {
-
-    private EditText etNombre, etEmail, etPassword, etConfirmarPassword;
-    private EditText etFechaNacimiento;
-    private TextView tvYaTieneCuenta;
-    private CheckBox cbTerminos;
-    private Button btnRegistrarse, btnVolverLogin;
-    private LottieAnimationView lottieLoading;
+    private TextInputLayout nameLayout;
+    private TextInputLayout emailLayout;
+    private TextInputLayout passwordLayout;
+    private TextInputLayout birthDateLayout;
+    private EditText nameInput;
+    private EditText emailInput;
+    private EditText passwordInput;
+    private EditText birthDateInput;
+    private Button registerButton;
+    private ProgressBar progressBar;
+    private Calendar selectedDate;
     private SharedPreferences sharedPreferences;
-    private Calendar fechaNacimiento;
-    private SimpleDateFormat dateFormat;
+    private AuthService authService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,207 +48,214 @@ public class RegistroActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registro);
 
         initializeViews();
-        setupClickListeners();
-        
+        setupDatePicker();
+        setupListeners();
         sharedPreferences = getSharedPreferences("MarvelUserPrefs", MODE_PRIVATE);
-        fechaNacimiento = Calendar.getInstance();
-        dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+    }
+
+    private void setupRetrofit() {
+        Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("https://tu-api.com/") // Reemplazar con la URL real de tu API
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+        authService = retrofit.create(AuthService.class);
     }
 
     private void initializeViews() {
-        etNombre = findViewById(R.id.etNombre);
-        etEmail = findViewById(R.id.etCorreo);
-        etPassword = findViewById(R.id.etContraseña);
-        etConfirmarPassword = findViewById(R.id.etConfirmarContraseña);
-        etFechaNacimiento = findViewById(R.id.etFechaNacimiento);
-        tvYaTieneCuenta = findViewById(R.id.btnVolverLogin);
-        cbTerminos = findViewById(R.id.cbTerminos);
-        btnRegistrarse = findViewById(R.id.btnRegistrarse);
-        btnVolverLogin = findViewById(R.id.btnVolverLogin);
-        lottieLoading = findViewById(R.id.loadingAnimation);
+        nameLayout = findViewById(R.id.nameLayout);
+        emailLayout = findViewById(R.id.emailLayout);
+        passwordLayout = findViewById(R.id.passwordLayout);
+        birthDateLayout = findViewById(R.id.birthDateLayout);
+        nameInput = findViewById(R.id.nameInput);
+        emailInput = findViewById(R.id.emailInput);
+        passwordInput = findViewById(R.id.passwordInput);
+        birthDateInput = findViewById(R.id.birthDateInput);
+        registerButton = findViewById(R.id.registerButton);
+        progressBar = findViewById(R.id.progressBar);
+        selectedDate = Calendar.getInstance();
     }
 
-    private void setupClickListeners() {
-        btnRegistrarse.setOnClickListener(v -> validateAndRegister());
-        
-        etFechaNacimiento.setOnClickListener(v -> showDatePicker());
-        
-        btnVolverLogin.setOnClickListener(v -> {
-            finish(); // Volver al LoginActivity
-        });
+    private void setupDatePicker() {
+        birthDateInput.setOnClickListener(v -> showDatePicker());
+    }
+
+    private void setupListeners() {
+        registerButton.setOnClickListener(v -> validateAndRegister());
     }
 
     private void showDatePicker() {
-        Calendar maxDate = Calendar.getInstance();
-        maxDate.add(Calendar.YEAR, -13); // Mínimo 13 años
-
         DatePickerDialog datePickerDialog = new DatePickerDialog(
             this,
             (view, year, month, dayOfMonth) -> {
-                fechaNacimiento.set(year, month, dayOfMonth);
-                etFechaNacimiento.setText(dateFormat.format(fechaNacimiento.getTime()));
+                selectedDate.set(year, month, dayOfMonth);
+                updateBirthDateField();
             },
-            fechaNacimiento.get(Calendar.YEAR),
-            fechaNacimiento.get(Calendar.MONTH),
-            fechaNacimiento.get(Calendar.DAY_OF_MONTH)
+            selectedDate.get(Calendar.YEAR),
+            selectedDate.get(Calendar.MONTH),
+            selectedDate.get(Calendar.DAY_OF_MONTH)
         );
-        
-        datePickerDialog.getDatePicker().setMaxDate(maxDate.getTimeInMillis());
         datePickerDialog.show();
     }
 
-    private void validateAndRegister() {
-        String nombre = etNombre.getText().toString().trim();
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-        String confirmarPassword = etConfirmarPassword.getText().toString().trim();
-        String fechaNac = etFechaNacimiento.getText().toString();
+    private void updateBirthDateField() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        birthDateInput.setText(dateFormat.format(selectedDate.getTime()));
+    }
 
+    private void validateAndRegister() {
         // Limpiar errores previos
-        etNombre.setError(null);
-        etEmail.setError(null);
-        etPassword.setError(null);
-        etConfirmarPassword.setError(null);
+        nameLayout.setError(null);
+        emailLayout.setError(null);
+        passwordLayout.setError(null);
+        birthDateLayout.setError(null);
+
+        String name = nameInput.getText().toString().trim();
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
+        String birthDate = birthDateInput.getText().toString().trim();
 
         boolean isValid = true;
 
-        // Validar nombre
-        if (TextUtils.isEmpty(nombre)) {
-            etNombre.setError("El nombre es requerido");
-            isValid = false;
-        } else if (nombre.length() < 2) {
-            etNombre.setError("El nombre debe tener al menos 2 caracteres");
+        // Validar campos vacíos
+        if (TextUtils.isEmpty(name)) {
+            nameLayout.setError("El nombre es requerido");
             isValid = false;
         }
 
-        // Validar email
         if (TextUtils.isEmpty(email)) {
-            etEmail.setError("El correo electrónico es requerido");
-            isValid = false;
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.setError("Ingrese un correo electrónico válido");
-            isValid = false;
-        } else if (emailExists(email)) {
-            etEmail.setError("Este correo ya está registrado");
+            emailLayout.setError("El correo es requerido");
             isValid = false;
         }
 
-        // Validar contraseña
         if (TextUtils.isEmpty(password)) {
-            etPassword.setError("La contraseña es requerida");
-            isValid = false;
-        } else if (password.length() < 6) {
-            etPassword.setError("La contraseña debe tener al menos 6 caracteres");
-            isValid = false;
-        } else if (!isPasswordStrong(password)) {
-            etPassword.setError("La contraseña debe contener al menos una letra y un número");
+            passwordLayout.setError("La contraseña es requerida");
             isValid = false;
         }
 
-        // Validar confirmación de contraseña
-        if (TextUtils.isEmpty(confirmarPassword)) {
-            etConfirmarPassword.setError("Debe confirmar la contraseña");
+        if (TextUtils.isEmpty(birthDate)) {
+            birthDateLayout.setError("La fecha de nacimiento es requerida");
             isValid = false;
-        } else if (!password.equals(confirmarPassword)) {
-            etConfirmarPassword.setError("Las contraseñas no coinciden");
+        }
+
+        // Validar formato de email
+        if (!TextUtils.isEmpty(email) && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailLayout.setError("Ingrese un correo válido");
+            isValid = false;
+        }
+
+        // Validar longitud de contraseña
+        if (!TextUtils.isEmpty(password) && password.length() < 6) {
+            passwordLayout.setError("La contraseña debe tener al menos 6 caracteres");
             isValid = false;
         }
 
         // Validar fecha de nacimiento
-        if (TextUtils.isEmpty(fechaNac) || fechaNac.equals("DD/MM/AAAA")) {
-            Toast.makeText(this, "Debe seleccionar su fecha de nacimiento", Toast.LENGTH_SHORT).show();
-            isValid = false;
-        }
-
-        // Validar términos y condiciones
-        if (!cbTerminos.isChecked()) {
-            Toast.makeText(this, "Debe aceptar los términos y condiciones", Toast.LENGTH_SHORT).show();
-            isValid = false;
-        }
-
-        if (isValid) {
-            performRegistration(nombre, email, password, fechaNac);
-        }
-    }
-
-    private boolean emailExists(String email) {
-        return sharedPreferences.contains("user_" + email);
-    }
-
-    private boolean isPasswordStrong(String password) {
-        boolean hasLetter = false;
-        boolean hasNumber = false;
-
-        for (char c : password.toCharArray()) {
-            if (Character.isLetter(c)) {
-                hasLetter = true;
-            } else if (Character.isDigit(c)) {
-                hasNumber = true;
+        if (!TextUtils.isEmpty(birthDate)) {
+            Calendar today = Calendar.getInstance();
+            Calendar birthDateCal = Calendar.getInstance();
+            birthDateCal.setTime(selectedDate.getTime());
+            
+            int age = today.get(Calendar.YEAR) - birthDateCal.get(Calendar.YEAR);
+            if (birthDateCal.get(Calendar.DAY_OF_YEAR) > today.get(Calendar.DAY_OF_YEAR)) {
+                age--;
+            }
+            
+            if (age < 18) {
+                birthDateLayout.setError("Debes ser mayor de 18 años");
+                isValid = false;
             }
         }
 
-        return hasLetter && hasNumber;
+        if (isValid) {
+            performRegistration(name, email, password, birthDate);
+        }
     }
 
-    private void performRegistration(String nombre, String email, String password, String fechaNac) {
-        // Mostrar animación de carga
-        lottieLoading.setVisibility(View.VISIBLE);
-        btnRegistrarse.setEnabled(false);
+    private void performRegistration(String name, String email, String password, String birthDate) {
+        setLoadingVisibility(true);
+        registerButton.setEnabled(false);
 
-        // Simular proceso de registro
-        new android.os.Handler().postDelayed(() -> {
-            // Crear usuario
-            Usuario usuario = new Usuario();
-            usuario.setNombre(nombre);
-            usuario.setCorreo(email);
-            usuario.setPassword(password);
-            usuario.setFechaNacimiento(fechaNac);
-            usuario.setId(generateUserId());
+        Log.d("RegistroActivity", "Iniciando registro para: " + email);
+        RegisterRequest request = new RegisterRequest(name, email, password, birthDate);
+        AuthConfig.getAuthService().register(request).enqueue(new Callback<AuthResponse>() {
+            @Override
+            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                setLoadingVisibility(false);
+                registerButton.setEnabled(true);
 
-            // Guardar usuario en SharedPreferences
-            saveUser(usuario);
+                Log.d("RegistroActivity", "Respuesta recibida. Código: " + response.code());
+                
+                if (response.isSuccessful() && response.body() != null) {
+                    AuthResponse authResponse = response.body();
+                    Log.d("RegistroActivity", "Respuesta exitosa: " + authResponse.isSuccess());
+                    
+                    if (authResponse.isSuccess()) {
+                        Toast.makeText(RegistroActivity.this, 
+                            "Registro exitoso. Por favor inicia sesión.", 
+                            Toast.LENGTH_LONG).show();
+                        
+                        Intent intent = new Intent(RegistroActivity.this, LoginActivity.class);
+                        intent.putExtra("registered_email", email);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        String errorMessage = authResponse.getMessage();
+                        Log.e("RegistroActivity", "Error en respuesta: " + errorMessage);
+                        
+                        if (errorMessage != null && !errorMessage.isEmpty()) {
+                            Toast.makeText(RegistroActivity.this, 
+                                errorMessage, 
+                                Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(RegistroActivity.this, 
+                                "Error en el registro", 
+                                Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    String errorBody = "";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorBody = response.errorBody().string();
+                            Log.e("RegistroActivity", "Error response body: " + errorBody);
+                        }
+                    } catch (Exception e) {
+                        Log.e("RegistroActivity", "Error al leer errorBody", e);
+                    }
+                    
+                    String errorMessage = "Error en el servidor (Código: " + response.code() + ")";
+                    if (!errorBody.isEmpty()) {
+                        errorMessage += ": " + errorBody;
+                    }
+                    Toast.makeText(RegistroActivity.this, 
+                        errorMessage, 
+                        Toast.LENGTH_LONG).show();
+                }
+            }
 
-            Toast.makeText(this, "¡Registro exitoso! Bienvenido a Marvel Studios", Toast.LENGTH_LONG).show();
-
-            // Ir directamente al login
-            Intent intent = new Intent(RegistroActivity.this, LoginActivity.class);
-            intent.putExtra("registered_email", email);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
-
-            lottieLoading.setVisibility(View.GONE);
-            btnRegistrarse.setEnabled(true);
-        }, 2500);
+            @Override
+            public void onFailure(Call<AuthResponse> call, Throwable t) {
+                setLoadingVisibility(false);
+                registerButton.setEnabled(true);
+                
+                String errorMessage = "Error de conexión";
+                if (t != null) {
+                    Log.e("RegistroActivity", "Error de conexión", t);
+                    if (t.getMessage() != null) {
+                        errorMessage += ": " + t.getMessage();
+                    }
+                }
+                
+                Toast.makeText(RegistroActivity.this, 
+                    errorMessage, 
+                    Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
-    private void saveUser(Usuario usuario) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        
-        // Guardar datos del usuario
-        editor.putString("user_" + usuario.getCorreo(), usuario.getNombre());
-        editor.putString("password_" + usuario.getCorreo(), usuario.getPassword());
-        editor.putString("name_" + usuario.getCorreo(), usuario.getNombre());
-        editor.putString("birthdate_" + usuario.getCorreo(), usuario.getFechaNacimiento());
-        editor.putString("id_" + usuario.getCorreo(), String.valueOf(usuario.getId()));
-        editor.putLong("registration_date_" + usuario.getCorreo(), System.currentTimeMillis());
-        
-        // Estadísticas iniciales
-        editor.putInt("comics_favoritos_" + usuario.getCorreo(), 0);
-        editor.putInt("heroes_seguidos_" + usuario.getCorreo(), 0);
-        editor.putInt("solicitudes_realizadas_" + usuario.getCorreo(), 0);
-        
-        editor.apply();
-    }
-
-    private int generateUserId() {
-        int lastId = sharedPreferences.getInt("last_user_id", 1000);
-        int newId = lastId + 1;
-        
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("last_user_id", newId);
-        editor.apply();
-        
-        return newId;
+    private void setLoadingVisibility(boolean isVisible) {
+        progressBar.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        registerButton.setEnabled(!isVisible);
     }
 } 

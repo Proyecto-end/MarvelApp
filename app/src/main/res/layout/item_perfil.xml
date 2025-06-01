@@ -1,48 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".PerfilFragment"
-    android:gravity="center_vertical"
-    android:orientation="vertical"
-    android:background="@android:color/system_accent2_900"
-    >
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
-
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="19 Años"
-        android:textSize="20dp"
-        android:layout_gravity="center"
-        android:background="@android:color/system_accent1_600"
-        android:textColor="@color/black"
-        />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Joel Barriosnuevo"
-        android:textSize="20dp"
-        android:background="@android:color/system_accent3_500"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        />
+        <TextView
+            android:id="@+id/tvNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/marvel_blue" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="JoelBarriosnuevo@gmail.com"
-        android:textSize="20dp"
-        android:layout_gravity="bottom"
-        android:textColor="@color/black"
-        android:textStyle="italic"
-        android:background="@android:color/system_error_500"
-        />
+        <TextView
+            android:id="@+id/tvEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textColor="@color/marvel_medium_text" />
 
+        <TextView
+            android:id="@+id/tvFechaNacimiento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textColor="@color/marvel_medium_text" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Editar"
+            android:textColor="@color/marvel_white"
+            app:backgroundTint="@color/marvel_red"
+            app:cornerRadius="8dp" />
 
+    </LinearLayout>
 
-</FrameLayout>
+</com.google.android.material.card.MaterialCardView>
