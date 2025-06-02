@@ -14,13 +14,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.quiz2.clases.Comic;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.Locale;
 
 public class SolicitarFragment extends Fragment {
 
-    private Spinner spinnerComics;
+    private MaterialAutoCompleteTextView spinnerComics;
     private EditText etCantidad, etMotivo;
     private RadioGroup rgPrioridad;
     private Button btnSolicitar;
@@ -98,24 +98,18 @@ public class SolicitarFragment extends Fragment {
         List<String> titulosComics = new ArrayList<>();
         titulosComics.add("Seleccionar comic...");
         
-        spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, titulosComics);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAdapter = new ArrayAdapter<>(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            titulosComics
+        );
         spinnerComics.setAdapter(spinnerAdapter);
 
-        spinnerComics.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position > 0 && comicsDisponibles != null && position <= comicsDisponibles.size()) {
-                    comicSeleccionado = comicsDisponibles.get(position - 1);
-                    showComicPreview(comicSeleccionado);
-                } else {
-                    comicSeleccionado = null;
-                    hideComicPreview();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+        spinnerComics.setOnItemClickListener((parent, view, position, id) -> {
+            if (position > 0 && comicsDisponibles != null && position <= comicsDisponibles.size()) {
+                comicSeleccionado = comicsDisponibles.get(position - 1);
+                showComicPreview(comicSeleccionado);
+            } else {
                 comicSeleccionado = null;
                 hideComicPreview();
             }
@@ -245,7 +239,9 @@ public class SolicitarFragment extends Fragment {
         titulos.add("Seleccionar comic...");
         
         for (Comic comic : comicsDisponibles) {
-            String disponibilidad = comic.getStock() > 0 ? " (Disponible: " + comic.getStock() + ")" : " (Agotado)";
+            String disponibilidad = comic.getStock() > 0 ? 
+                String.format(" (Disponible: %d - $%.2f)", comic.getStock(), comic.getPrecio()) : 
+                " (Agotado)";
             titulos.add(comic.getTitulo() + disponibilidad);
         }
         
@@ -255,7 +251,7 @@ public class SolicitarFragment extends Fragment {
     }
 
     private void showComicPreview(Comic comic) {
-        if (!isAdded()) return;
+        if (!isAdded() || comic == null) return;
         
         layoutPreview.setVisibility(View.VISIBLE);
         
@@ -306,7 +302,14 @@ public class SolicitarFragment extends Fragment {
             return;
         }
 
-        int cantidadInt = Integer.parseInt(cantidad);
+        int cantidadInt;
+        try {
+            cantidadInt = Integer.parseInt(cantidad);
+        } catch (NumberFormatException e) {
+            etCantidad.setError("Ingresa un número válido");
+            return;
+        }
+
         if (cantidadInt <= 0) {
             etCantidad.setError("La cantidad debe ser mayor a 0");
             return;

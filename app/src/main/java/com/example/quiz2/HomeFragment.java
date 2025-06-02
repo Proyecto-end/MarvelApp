@@ -24,6 +24,13 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import com.example.quiz2.api.ApiConfig;
+import com.example.quiz2.api.MarvelApiClient;
+import com.example.quiz2.api.MarvelResponse;
+import com.example.quiz2.MainMarvelActivity;
 
 public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperheroeFavoriteListener {
 
@@ -31,7 +38,7 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
     private SuperheroeAdapter adapter;
     private EditText etBusqueda;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private LottieAnimationView lottieLoading;
+    public LottieAnimationView lottieLoading;
     private TextView tvBienvenida;
     private View layoutEstadoVacio;
     
@@ -66,6 +73,32 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
         tvBienvenida = view.findViewById(R.id.tvWelcome);
         layoutEstadoVacio = view.findViewById(R.id.layoutEmpty);
         
+        // Configurar SwipeRefreshLayout
+        if (swipeRefreshLayout != null && getContext() != null) {
+            try {
+                swipeRefreshLayout.setProgressBackgroundColorSchemeColor(
+                    getContext().getResources().getColor(R.color.marvel_medium_gray)
+                );
+                swipeRefreshLayout.setColorSchemeColors(
+                    getContext().getResources().getColor(R.color.marvel_red),
+                    getContext().getResources().getColor(R.color.marvel_blue),
+                    getContext().getResources().getColor(R.color.marvel_purple)
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        // Configurar LottieAnimationView
+        if (lottieLoading != null) {
+            try {
+                lottieLoading.setAnimation(R.raw.loading_animation);
+                lottieLoading.setVisibility(View.GONE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
         // Inicializar chips para filtros
         chipTodos = view.findViewById(R.id.chipTodos);
         chipAvengers = view.findViewById(R.id.chipAvengers);
@@ -79,8 +112,11 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
             currentUser = mainActivity.getCurrentUser();
             sharedPreferences = mainActivity.getMarvelSharedPreferences();
             
-            String nombreUsuario = sharedPreferences.getString("name_" + currentUser, currentUser);
-            tvBienvenida.setText("¡Bienvenido, " + nombreUsuario + "!");
+            String nombreCompleto = sharedPreferences.getString("userName", "");
+            if (nombreCompleto.isEmpty()) {
+                nombreCompleto = currentUser;
+            }
+            tvBienvenida.setText("¡Bienvenido, " + nombreCompleto + "!");
         }
     }
 
@@ -145,74 +181,178 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
     }
 
     private void setupSwipeRefresh() {
-        swipeRefreshLayout.setColorSchemeResources(
-            R.color.marvel_red,
-            R.color.marvel_blue,
-            R.color.marvel_purple
-        );
-        
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            loadSuperheroes();
-            Toast.makeText(getContext(), "Lista actualizada", Toast.LENGTH_SHORT).show();
-        });
+        if (swipeRefreshLayout != null && getContext() != null) {
+            swipeRefreshLayout.setProgressBackgroundColorSchemeColor(
+                getContext().getResources().getColor(R.color.marvel_medium_gray)
+            );
+            swipeRefreshLayout.setColorSchemeColors(
+                getContext().getResources().getColor(R.color.marvel_red),
+                getContext().getResources().getColor(R.color.marvel_blue),
+                getContext().getResources().getColor(R.color.marvel_purple)
+            );
+            
+            swipeRefreshLayout.setOnRefreshListener(() -> {
+                loadSuperheroes();
+                Toast.makeText(getContext(), "Lista actualizada", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 
     private void loadSuperheroes() {
         showLoading(true);
         
-        // Simular carga de datos
-        new android.os.Handler().postDelayed(() -> {
-            superheroesCompletos = createMarvelHeroes();
-            adapter.updateList(superheroesCompletos);
-            updateEstadoLista();
-            showLoading(false);
-            swipeRefreshLayout.setRefreshing(false);
-        }, 1500);
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String hash = MarvelApiClient.generateHash(timestamp);
+
+        MarvelApiClient.getInstance()
+            .getApiService()
+            .getCharacters(ApiConfig.PUBLIC_KEY, timestamp, hash, 20, 0)
+            .enqueue(new Callback<MarvelResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<MarvelResponse> call, @NonNull Response<MarvelResponse> response) {
+                    if (!isAdded()) return; // Verificar si el fragmento está adjunto
+                    
+                    showLoading(false);
+                    if (swipeRefreshLayout != null) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                    
+                    if (response.isSuccessful() && response.body() != null) {
+                        MarvelResponse.Data data = response.body().getData();
+                        if (data != null && data.getResults() != null && !data.getResults().isEmpty()) {
+                            android.util.Log.d("API", "Héroes recibidos: " + data.getResults().size());
+                            if (getContext() != null) {
+                                android.widget.Toast.makeText(getContext(), 
+                                    "Héroes recibidos: " + data.getResults().size(), 
+                                    android.widget.Toast.LENGTH_SHORT).show();
+                            }
+                            superheroesCompletos = convertToSuperheroes(data.getResults());
+                            if (adapter != null) {
+                                adapter.updateList(superheroesCompletos);
+                                updateEstadoLista();
+                            }
+                        } else {
+                            showError("No se encontraron superhéroes");
+                        }
+                    } else {
+                        String errorMessage = "Error al cargar los superhéroes";
+                        if (response.code() == 401) {
+                            errorMessage = "Error de autenticación con la API de Marvel";
+                        } else if (response.code() == 429) {
+                            errorMessage = "Límite de solicitudes excedido";
+                        }
+                        showError(errorMessage);
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<MarvelResponse> call, @NonNull Throwable t) {
+                    if (!isAdded()) return; // Verificar si el fragmento está adjunto
+                    
+                    showLoading(false);
+                    if (swipeRefreshLayout != null) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                    
+                    String errorMessage = "Error de conexión";
+                    if (t instanceof java.net.UnknownHostException) {
+                        errorMessage = "No hay conexión a internet";
+                    } else if (t instanceof java.net.SocketTimeoutException) {
+                        errorMessage = "Tiempo de espera agotado";
+                    }
+                    showError(errorMessage + ": " + t.getMessage());
+                }
+            });
     }
 
-    private List<Superheroe> createMarvelHeroes() {
+    private List<Superheroe> convertToSuperheroes(List<MarvelResponse.Character> characters) {
         List<Superheroe> heroes = new ArrayList<>();
         
-        // Spider-Man
-        Superheroe spiderMan = new Superheroe();
-        spiderMan.setId(1);
-        spiderMan.setNombre("Spider-Man");
-        spiderMan.setDescripcion("El amigable vecino de Nueva York con poderes arácnidos.");
-        spiderMan.setUniverso("Spider-Verse");
-        spiderMan.setImagenUrl("https://i.imgur.com/YOgWqMi.jpg");
-        spiderMan.setPoderes(Arrays.asList("Fuerza sobrehumana", "Agilidad", "Sentido arácnido", "Lanzar telarañas"));
-        spiderMan.setComics(Arrays.asList("Amazing Spider-Man #1", "Spider-Man: No Way Home", "Ultimate Spider-Man"));
-        spiderMan.setPopularidad(95);
-        spiderMan.setEstado("Vivo");
-        heroes.add(spiderMan);
-
-        // Iron Man
-        Superheroe ironMan = new Superheroe();
-        ironMan.setId(2);
-        ironMan.setNombre("Iron Man");
-        ironMan.setDescripcion("Tony Stark, genio millonario con armadura tecnológica avanzada.");
-        ironMan.setUniverso("Avengers");
-        ironMan.setImagenUrl("https://i.imgur.com/xLn5K9h.jpg");
-        ironMan.setPoderes(Arrays.asList("Inteligencia genial", "Armadura Mark", "Vuelo", "Repulsores"));
-        ironMan.setComics(Arrays.asList("Iron Man #1", "Avengers Assemble", "Civil War"));
-        ironMan.setPopularidad(92);
-        ironMan.setEstado("Vivo");
-        heroes.add(ironMan);
-
-        // Wolverine
-        Superheroe wolverine = new Superheroe();
-        wolverine.setId(3);
-        wolverine.setNombre("Wolverine");
-        wolverine.setDescripcion("Mutante con garras de adamantium y factor de curación.");
-        wolverine.setUniverso("X-Men");
-        wolverine.setImagenUrl("https://i.imgur.com/R2FKLqX.jpg");
-        wolverine.setPoderes(Arrays.asList("Garras de adamantium", "Factor de curación", "Sentidos agudizados", "Longevidad"));
-        wolverine.setComics(Arrays.asList("Wolverine #1", "X-Men Origins", "Old Man Logan"));
-        wolverine.setPopularidad(90);
-        wolverine.setEstado("Vivo");
-        heroes.add(wolverine);
-
+        for (MarvelResponse.Character character : characters) {
+            Superheroe hero = new Superheroe();
+            hero.setId(character.getId());
+            hero.setNombre(character.getName());
+            hero.setDescripcion(character.getDescription());
+            hero.setUniverso(character.getUniverse());
+            
+            // Asignar grupos basado en el nombre y descripción
+            String nombre = character.getName().toLowerCase();
+            String descripcion = character.getDescription().toLowerCase();
+            
+            if (nombre.contains("spider") || nombre.contains("peter") || nombre.contains("parker")) {
+                hero.addGrupo("Spider-Man");
+            }
+            if (nombre.contains("iron") || nombre.contains("stark") || nombre.contains("tony")) {
+                hero.addGrupo("Avengers");
+            }
+            if (nombre.contains("captain") || nombre.contains("america") || nombre.contains("steve") || nombre.contains("rogers")) {
+                hero.addGrupo("Avengers");
+            }
+            if (nombre.contains("thor") || nombre.contains("odinson")) {
+                hero.addGrupo("Avengers");
+            }
+            if (nombre.contains("hulk") || nombre.contains("banner") || nombre.contains("bruce")) {
+                hero.addGrupo("Avengers");
+            }
+            if (nombre.contains("black") && nombre.contains("widow")) {
+                hero.addGrupo("Avengers");
+            }
+            if (nombre.contains("hawk") || nombre.contains("eye")) {
+                hero.addGrupo("Avengers");
+            }
+            if (nombre.contains("wolverine") || nombre.contains("logan")) {
+                hero.addGrupo("X-Men");
+            }
+            if (nombre.contains("cyclops") || nombre.contains("scott")) {
+                hero.addGrupo("X-Men");
+            }
+            if (nombre.contains("storm") || nombre.contains("oro")) {
+                hero.addGrupo("X-Men");
+            }
+            if (nombre.contains("jean") || nombre.contains("grey") || nombre.contains("phoenix")) {
+                hero.addGrupo("X-Men");
+            }
+            if (nombre.contains("mister") && nombre.contains("fantastic")) {
+                hero.addGrupo("4 Fantásticos");
+            }
+            if (nombre.contains("invisible") && nombre.contains("woman")) {
+                hero.addGrupo("4 Fantásticos");
+            }
+            if (nombre.contains("human") && nombre.contains("torch")) {
+                hero.addGrupo("4 Fantásticos");
+            }
+            if (nombre.contains("thing") || nombre.contains("ben") || nombre.contains("grimm")) {
+                hero.addGrupo("4 Fantásticos");
+            }
+            
+            if (character.getThumbnail() != null) {
+                hero.setImagenUrl(character.getThumbnail().getFullPath());
+            }
+            
+            // Obtener comics del personaje
+            if (character.getComics() != null && character.getComics().getItems() != null) {
+                List<String> comicTitles = new ArrayList<>();
+                for (MarvelResponse.ComicSummary comic : character.getComics().getItems()) {
+                    comicTitles.add(comic.getName());
+                }
+                hero.setComics(comicTitles);
+            }
+            
+            hero.setPopularidad(character.getPopularity());
+            hero.setEstado(character.isActive() ? "Activo" : "Inactivo");
+            
+            heroes.add(hero);
+        }
+        
         return heroes;
+    }
+
+    private void showError(String message) {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+        layoutEstadoVacio.setVisibility(View.VISIBLE);
+        recyclerViewSuperheroes.setVisibility(View.GONE);
     }
 
     private void filterSuperheroes(String query, String categoria) {
@@ -231,13 +371,28 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
     }
 
     private void showLoading(boolean show) {
-        if (show) {
-            lottieLoading.setVisibility(View.VISIBLE);
-            recyclerViewSuperheroes.setVisibility(View.GONE);
-            layoutEstadoVacio.setVisibility(View.GONE);
-        } else {
-            lottieLoading.setVisibility(View.GONE);
-            recyclerViewSuperheroes.setVisibility(View.VISIBLE);
+        if (getActivity() == null || !isAdded()) return;
+        
+        if (lottieLoading != null) {
+            try {
+                if (show) {
+                    lottieLoading.setVisibility(android.view.View.VISIBLE);
+                    lottieLoading.resumeAnimation();
+                } else {
+                    lottieLoading.setVisibility(android.view.View.GONE);
+                    lottieLoading.cancelAnimation();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        if (recyclerViewSuperheroes != null) {
+            recyclerViewSuperheroes.setVisibility(show ? android.view.View.GONE : android.view.View.VISIBLE);
+        }
+        
+        if (layoutEstadoVacio != null) {
+            layoutEstadoVacio.setVisibility(android.view.View.GONE);
         }
     }
 

@@ -104,6 +104,11 @@ public class MainMarvelActivity extends AppCompatActivity {
         bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if (!isUserLoggedIn()) {
+                    redirectToLogin();
+                    return false;
+                }
+
                 Fragment selectedFragment = null;
                 int itemId = item.getItemId();
                 
@@ -122,6 +127,20 @@ public class MainMarvelActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private boolean isUserLoggedIn() {
+        return sharedPreferences != null && 
+               sharedPreferences.getBoolean("isLoggedIn", false) && 
+               !sharedPreferences.getString("currentUser", "").isEmpty();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!isUserLoggedIn()) {
+            redirectToLogin();
+        }
     }
 
     private void loadFragment(Fragment fragment) {

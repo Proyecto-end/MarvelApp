@@ -1,5 +1,6 @@
 package com.example.quiz2.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.quiz2.R;
+import com.example.quiz2.MainMarvelActivity;
 import com.example.quiz2.api.ApiConfig;
 import com.example.quiz2.api.MarvelApiClient;
 import com.example.quiz2.api.MarvelResponse;
@@ -41,17 +43,41 @@ public class SolicitarFragment extends Fragment {
     private List<MarvelResponse.Comic> comicsList;
     private MarvelResponse.Comic selectedComic;
     private ArrayAdapter<String> adapter;
+    private SharedPreferences sharedPreferences;
+    private String currentUser;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_solicitar, container, false);
         
+        setupUserInfo();
+        if (!isUserLoggedIn()) {
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
+            return view;
+        }
+        
         initializeViews(view);
         setupSpinner();
         loadComics();
         
         return view;
+    }
+
+    private void setupUserInfo() {
+        if (getActivity() instanceof MainMarvelActivity) {
+            MainMarvelActivity mainActivity = (MainMarvelActivity) getActivity();
+            currentUser = mainActivity.getCurrentUser();
+            sharedPreferences = mainActivity.getMarvelSharedPreferences();
+        }
+    }
+
+    private boolean isUserLoggedIn() {
+        return sharedPreferences != null && 
+               sharedPreferences.getBoolean("isLoggedIn", false) && 
+               !sharedPreferences.getString("currentUser", "").isEmpty();
     }
 
     private void initializeViews(View view) {

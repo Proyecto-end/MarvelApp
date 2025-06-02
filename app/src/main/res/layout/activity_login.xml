@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="32dp"
-        android:paddingVertical="24dp">
+        >
 
         <!-- Contenedor Principal con Animación -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
-                app:cardBackgroundColor="@android:color/transparent"
+                app:cardBackgroundColor="?attr/actionModeSplitBackground"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="16dp"
                 app:strokeWidth="0dp"
@@ -40,12 +40,12 @@
 
                 <ImageView
                     android:id="@+id/ivMarvelLogo"
-                    android:layout_width="240dp"
+                    android:layout_width="320dp"
                     android:layout_height="120dp"
-                    android:padding="16dp"
-                    android:src="@drawable/marvel_logo"
+                    android:padding="0dp"
+                    android:src="@drawable/marvel_login_logo"
                     android:scaleType="fitCenter"
-                    android:background="@drawable/logo_background_gradient" />
+                    />
 
             </com.google.android.material.card.MaterialCardView>
 
@@ -55,9 +55,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="HERO ACCESS"
+                android:text="ACCEDE A TU CUENTA"
                 android:textColor="@color/marvel_white"
-                android:textSize="32sp"
+                android:textSize="25sp"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="0.15"
@@ -75,11 +75,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="✨ Accede al universo Marvel ✨"
+                android:text="✨ Accede al universo Marvel Y disfruta de nuestro contenido✨"
                 android:textColor="@color/marvel_blue"
                 android:textSize="18sp"
                 android:textStyle="italic"
                 android:fontFamily="serif"
+                android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvTitulo" />
@@ -109,14 +110,12 @@
 
                     <!-- Icono de Usuario Decorativo -->
                     <ImageView
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
                         android:layout_gravity="center"
                         android:layout_marginBottom="24dp"
-                        android:src="@drawable/ic_superhero"
-                        android:background="@drawable/circle_hero_background"
-                        android:padding="12dp"
-                        app:tint="@color/marvel_white" />
+                        android:src="@drawable/icono_redondo_login"
+                        android:padding="5dp" />
 
                     <!-- Campo Usuario Mejorado -->
                     <com.google.android.material.textfield.TextInputLayout
@@ -146,7 +145,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="24dp"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:passwordToggleEnabled="true">
+                        app:passwordToggleEnabled="true"
+                        app:passwordToggleTint="@color/marvel_white">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/passwordInput"
@@ -315,7 +315,7 @@
 
             <!-- Loading Animation -->
             <ProgressBar
-                android:id="@+id/loadingAnimation"
+                android:id="@+id/progressLoading"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="center"

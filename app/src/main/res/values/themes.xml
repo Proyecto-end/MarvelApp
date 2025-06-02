@@ -12,7 +12,7 @@
     <style name="Theme.MarvelStudios" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Colores primarios -->
         <item name="colorPrimary">@color/marvel_red</item>
-        <item name="colorPrimaryVariant">@color/marvel_red_dark</item>
+        <item name="colorPrimaryVariant">@color/marvel_dark_red</item>
         <item name="colorOnPrimary">@color/marvel_white</item>
         
         <!-- Colores secundarios -->

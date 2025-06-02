@@ -75,7 +75,7 @@ public class SuperheroeAdapter extends RecyclerView.Adapter<SuperheroeAdapter.Su
                     superheroe.getDescripcion().toLowerCase().contains(query.toLowerCase());
                 
                 boolean matchesCategory = categoria.equals("Todos") || 
-                    superheroe.getUniverso().equalsIgnoreCase(categoria);
+                    (superheroe.getGrupos() != null && superheroe.getGrupos().contains(categoria));
                 
                 if (matchesQuery && matchesCategory) {
                     superheroesListFiltered.add(superheroe);
@@ -160,13 +160,7 @@ public class SuperheroeAdapter extends RecyclerView.Adapter<SuperheroeAdapter.Su
             // Configurar botón ver más
             btnVerMas.setOnClickListener(v -> {
                 Intent intent = new Intent(context, DetalleSuperheroActivity.class);
-                intent.putExtra("superheroe_id", superheroe.getId());
-                intent.putExtra("superheroe_nombre", superheroe.getNombre());
-                intent.putExtra("superheroe_descripcion", superheroe.getDescripcion());
-                intent.putExtra("superheroe_imagen", superheroe.getImagenUrl());
-                intent.putExtra("superheroe_universo", superheroe.getUniverso());
-                intent.putExtra("superheroe_popularidad", superheroe.getPopularidad());
-                intent.putExtra("superheroe_estado", superheroe.getEstado());
+                intent.putExtra("superheroe_objeto", superheroe);
                 context.startActivity(intent);
             });
             

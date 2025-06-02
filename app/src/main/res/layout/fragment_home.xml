@@ -12,7 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        app:cardBackgroundColor="@color/marvel_medium_gray"
+        app:cardBackgroundColor="@color/marvel_red"
         app:cardCornerRadius="12dp"
         app:cardElevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:text="Bienvenido al Universo Marvel"
                 android:textColor="@color/marvel_white"
-                android:textSize="20sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 android:gravity="center" />
 
@@ -41,8 +41,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Descubre todos los superhéroes"
-                android:textColor="@color/marvel_medium_text"
-                android:textSize="14sp"
+                android:textColor="@color/marvel_white"
+                android:textSize="16sp"
                 android:gravity="center" />
 
         </LinearLayout>
@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
-        app:cardBackgroundColor="@color/marvel_medium_gray"
+        app:cardBackgroundColor="@color/marvel_dark_red"
         app:cardCornerRadius="25dp"
         app:cardElevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -75,7 +75,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_search"
-                android:tint="@color/marvel_blue"
+                android:tint="@color/marvel_white"
                 android:layout_marginEnd="12dp" />
 
             <EditText
@@ -86,7 +86,7 @@
                 android:background="@android:color/transparent"
                 android:hint="Buscar superhéroe..."
                 android:textColor="@color/marvel_white"
-                android:textColorHint="@color/marvel_medium_text"
+                android:textColorHint="@color/marvel_light_gray"
                 android:textSize="16sp"
                 android:inputType="text"
                 android:imeOptions="actionSearch" />
@@ -96,7 +96,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_clear"
-                android:tint="@color/marvel_medium_text"
+                android:tint="@color/marvel_white"
                 android:visibility="gone"
                 android:clickable="true"
                 android:focusable="true"
@@ -131,7 +131,7 @@
                 android:text="Todos"
                 android:checked="true"
                 app:chipBackgroundColor="@color/marvel_red"
-                app:chipStrokeColor="@color/marvel_red"
+                app:chipStrokeColor="@color/marvel_white"
                 android:textColor="@color/marvel_white"
                 android:layout_marginEnd="8dp" />
 
@@ -140,9 +140,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Avengers"
-                app:chipBackgroundColor="@color/marvel_medium_gray"
-                app:chipStrokeColor="@color/marvel_blue"
-                android:textColor="@color/marvel_blue"
+                app:chipBackgroundColor="@color/marvel_dark_red"
+                app:chipStrokeColor="@color/marvel_white"
+                android:textColor="@color/marvel_white"
                 android:layout_marginEnd="8dp" />
 
             <com.google.android.material.chip.Chip
@@ -150,9 +150,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="X-Men"
-                app:chipBackgroundColor="@color/marvel_medium_gray"
-                app:chipStrokeColor="@color/marvel_purple"
-                android:textColor="@color/marvel_purple"
+                app:chipBackgroundColor="@color/marvel_dark_red"
+                app:chipStrokeColor="@color/marvel_white"
+                android:textColor="@color/marvel_white"
                 android:layout_marginEnd="8dp" />
 
             <com.google.android.material.chip.Chip
@@ -160,9 +160,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="4 Fantásticos"
-                app:chipBackgroundColor="@color/marvel_medium_gray"
-                app:chipStrokeColor="@color/marvel_blue"
-                android:textColor="@color/marvel_blue"
+                app:chipBackgroundColor="@color/marvel_dark_red"
+                app:chipStrokeColor="@color/marvel_white"
+                android:textColor="@color/marvel_white"
                 android:layout_marginEnd="8dp" />
 
         </LinearLayout>
@@ -199,12 +199,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_rawRes="@raw/loading_animation" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Empty State -->
+    <!-- Estado Vacío -->
     <LinearLayout
         android:id="@+id/layoutEmpty"
         android:layout_width="wrap_content"
@@ -218,26 +215,19 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_search_off"
-            android:tint="@color/marvel_medium_text" />
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_empty_state"
+            android:tint="@color/marvel_red" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="No se encontraron superhéroes"
-            android:textColor="@color/marvel_medium_text"
-            android:textSize="16sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Intenta con otro término de búsqueda"
-            android:textColor="@color/marvel_medium_text"
-            android:textSize="14sp" />
+            android:textColor="@color/marvel_white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

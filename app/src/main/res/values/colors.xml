@@ -2,7 +2,8 @@
 <resources>
     <!-- Colores principales de Marvel -->
     <color name="marvel_red">#E62429</color>
-    <color name="marvel_red_dark">#B81D24</color>
+    <color name="marvel_dark_red">#B81D24</color>
+    <color name="marvel_red_light">#FF3B41</color>
     <color name="marvel_blue">#518CCA</color>
     <color name="marvel_blue_dark">#405275</color>
     <color name="marvel_purple">#663399</color>

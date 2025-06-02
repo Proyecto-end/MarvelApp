@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso;
 import com.example.quiz2.api.MarvelResponse;
 import java.util.Arrays;
 import java.util.List;
+import com.example.quiz2.clases.Superheroe;
 
 public class DetalleSuperheroActivity extends AppCompatActivity {
 
@@ -33,15 +34,20 @@ public class DetalleSuperheroActivity extends AppCompatActivity {
     
     private String superheroeName;
     private boolean isFavorite = false;
+    private Superheroe superheroe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detalle_superhero);
+        setContentView(R.layout.activity_detalle_superheroe);
         
         initializeViews();
         setupToolbar();
-        loadSuperheroData();
+        // Recibir el objeto Superheroe
+        superheroe = (Superheroe) getIntent().getSerializableExtra("superheroe_objeto");
+        if (superheroe != null) {
+            mostrarDatosSuperheroe();
+        }
         setupClickListeners();
     }
 
@@ -71,46 +77,25 @@ public class DetalleSuperheroActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
-    private void loadSuperheroData() {
-        MarvelResponse.Character hero = (MarvelResponse.Character) getIntent().getSerializableExtra(EXTRA_HERO);
-        if (hero != null) {
-            superheroeName = hero.getName();
-            
-            // Configurar título del toolbar
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(hero.getName());
-            }
-            
-            // Configurar datos básicos
-            tvSuperheroeName.setText(hero.getName());
-            tvSuperheroDescription.setText(hero.getDescription());
-            chipUniverso.setText(hero.getUniverse());
-            
-            // Configurar estado
-            String estado = hero.isActive() ? "Activo" : "Inactivo";
-            chipEstado.setText(estado);
-            chipEstado.setChipBackgroundColorResource(
-                hero.isActive() ? R.color.verde_activo : R.color.rojo_inactivo);
-            
-            // Configurar popularidad
-            pbPopularidad.setProgress(hero.getPopularity());
-            tvPopularidadTexto.setText(hero.getPopularity() + "% Popularidad");
-            
-            // Cargar imagen
-            if (hero.getThumbnail() != null) {
-                String imageUrl = hero.getThumbnail().getFullPath();
-                Picasso.get()
-                    .load(imageUrl)
-                    .placeholder(R.drawable.placeholder_hero)
-                    .error(R.drawable.error_hero)
-                    .into(ivSuperheroeFoto);
-            } else {
-                ivSuperheroeFoto.setImageResource(R.drawable.placeholder_hero);
-            }
-            
-            // Configurar listas según el héroe
-            setupHeroSpecificData(hero.getName());
+    private void mostrarDatosSuperheroe() {
+        tvSuperheroeName.setText(superheroe.getNombre());
+        tvSuperheroDescription.setText(superheroe.getDescripcion());
+        chipUniverso.setText(superheroe.getUniverso());
+        chipEstado.setText(superheroe.getEstado());
+        chipEstado.setChipBackgroundColorResource(
+            "Activo".equals(superheroe.getEstado()) ? R.color.verde_activo : R.color.rojo_inactivo);
+        pbPopularidad.setProgress(superheroe.getPopularidad());
+        tvPopularidadTexto.setText(superheroe.getPopularidad() + "% Popularidad");
+        if (superheroe.getImagenUrl() != null && !superheroe.getImagenUrl().isEmpty()) {
+            Picasso.get()
+                .load(superheroe.getImagenUrl())
+                .placeholder(R.drawable.placeholder_hero)
+                .error(R.drawable.error_hero)
+                .into(ivSuperheroeFoto);
+        } else {
+            ivSuperheroeFoto.setImageResource(R.drawable.placeholder_hero);
         }
+        // Puedes agregar aquí más campos si lo deseas (comics, poderes, etc.)
     }
 
     private void setupHeroSpecificData(String heroName) {

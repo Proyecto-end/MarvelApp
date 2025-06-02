@@ -1,8 +1,9 @@
 package com.example.quiz2.clases;
 
 import java.util.List;
+import java.util.ArrayList;
 
-public class Superheroe {
+public class Superheroe implements java.io.Serializable {
     private int id;
     private String nombre;
     private String descripcion;
@@ -14,8 +15,10 @@ public class Superheroe {
     private String estado; // Vivo, Fallecido, Desconocido
     private int popularidad;
     private boolean favorito;
+    private List<String> grupos; // Lista de grupos a los que pertenece el superhéroe
 
     public Superheroe() {
+        this.grupos = new ArrayList<>();
     }
 
     public Superheroe(int id, String nombre, String descripcion, String imagenUrl) {
@@ -23,6 +26,7 @@ public class Superheroe {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.imagenUrl = imagenUrl;
+        this.grupos = new ArrayList<>();
     }
 
     // Getters y Setters
@@ -112,5 +116,20 @@ public class Superheroe {
 
     public void setFavorito(boolean favorito) {
         this.favorito = favorito;
+    }
+
+    public List<String> getGrupos() {
+        return grupos;
+    }
+
+    public void setGrupos(List<String> grupos) {
+        this.grupos = grupos;
+    }
+
+    public void addGrupo(String grupo) {
+        if (this.grupos == null) {
+            this.grupos = new ArrayList<>();
+        }
+        this.grupos.add(grupo);
     }
 } 
