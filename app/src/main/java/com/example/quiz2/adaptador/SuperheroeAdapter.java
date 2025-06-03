@@ -2,12 +2,13 @@ package com.example.quiz2.adaptador;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,26 +18,22 @@ import com.example.quiz2.clases.Superheroe;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
+import com.google.android.material.button.MaterialButton;
+import com.bumptech.glide.Glide;
+import com.google.android.material.chip.Chip;
+import android.widget.ImageButton;
+import com.google.android.material.imageview.ShapeableImageView;
 
 public class SuperheroeAdapter extends RecyclerView.Adapter<SuperheroeAdapter.SuperheroeViewHolder> {
 
     private Context context;
-    private List<Superheroe> superheroesList;
-    private List<Superheroe> superheroesListFiltered;
-    private OnSuperheroeFavoriteListener favoriteListener;
+    private List<Superheroe> superheroes;
+    private OnSuperheroeClickListener listener;
 
-    public interface OnSuperheroeFavoriteListener {
-        void onFavoriteClick(Superheroe superheroe, boolean isFavorite);
-    }
-
-    public SuperheroeAdapter(Context context, List<Superheroe> superheroesList) {
+    public SuperheroeAdapter(Context context, List<Superheroe> superheroes, OnSuperheroeClickListener listener) {
         this.context = context;
-        this.superheroesList = superheroesList;
-        this.superheroesListFiltered = new ArrayList<>(superheroesList);
-    }
-
-    public void setOnSuperheroeFavoriteListener(OnSuperheroeFavoriteListener listener) {
-        this.favoriteListener = listener;
+        this.superheroes = superheroes;
+        this.listener = listener;
     }
 
     @NonNull
@@ -48,139 +45,100 @@ public class SuperheroeAdapter extends RecyclerView.Adapter<SuperheroeAdapter.Su
 
     @Override
     public void onBindViewHolder(@NonNull SuperheroeViewHolder holder, int position) {
-        Superheroe superheroe = superheroesListFiltered.get(position);
+        Superheroe superheroe = superheroes.get(position);
         holder.bind(superheroe);
     }
 
     @Override
     public int getItemCount() {
-        return superheroesListFiltered.size();
+        return superheroes != null ? superheroes.size() : 0;
     }
 
     public void updateList(List<Superheroe> newList) {
-        this.superheroesList = newList;
-        this.superheroesListFiltered = new ArrayList<>(newList);
+        this.superheroes = newList;
         notifyDataSetChanged();
     }
 
     public void filter(String query, String categoria) {
-        superheroesListFiltered.clear();
-        
-        if (query.isEmpty() && categoria.equals("Todos")) {
-            superheroesListFiltered.addAll(superheroesList);
-        } else {
-            for (Superheroe superheroe : superheroesList) {
-                boolean matchesQuery = query.isEmpty() || 
-                    superheroe.getNombre().toLowerCase().contains(query.toLowerCase()) ||
-                    superheroe.getDescripcion().toLowerCase().contains(query.toLowerCase());
-                
-                boolean matchesCategory = categoria.equals("Todos") || 
-                    (superheroe.getGrupos() != null && superheroe.getGrupos().contains(categoria));
-                
-                if (matchesQuery && matchesCategory) {
-                    superheroesListFiltered.add(superheroe);
-                }
-            }
-        }
-        notifyDataSetChanged();
+        // Implementation of filter method
     }
 
     public class SuperheroeViewHolder extends RecyclerView.ViewHolder {
-        
-        private ImageView ivFotoSuperheroe;
-        private TextView tvNombreSuperheroe;
-        private TextView tvUniversoSuperheroe;
-        private TextView tvDescripcionSuperheroe;
-        private View tvEstadoSuperheroe;
-        private ProgressBar pbPopularidad;
+        private ShapeableImageView ivSuperheroe;
+        private TextView tvNombre;
+        private TextView tvUniverso;
+        private TextView tvDescripcion;
+        private TextView tvEstado;
+        private View estadoPunto;
         private TextView tvPopularidad;
-        private TextView tvCantidadComics;
-        private Button btnVerMas;
-        private ImageView btnFavorito;
+        private TextView tvComics;
+        private MaterialButton btnVerMas;
 
         public SuperheroeViewHolder(@NonNull View itemView) {
             super(itemView);
-            
-            ivFotoSuperheroe = itemView.findViewById(R.id.ivSuperheroe);
-            tvNombreSuperheroe = itemView.findViewById(R.id.tvNombre);
-            tvUniversoSuperheroe = itemView.findViewById(R.id.tvUniverso);
-            tvDescripcionSuperheroe = itemView.findViewById(R.id.tvDescripcion);
-            tvEstadoSuperheroe = itemView.findViewById(R.id.viewEstado);
-            pbPopularidad = itemView.findViewById(R.id.pb_popularidad);
+            ivSuperheroe = itemView.findViewById(R.id.heroImage);
+            tvNombre = itemView.findViewById(R.id.heroName);
+            tvUniverso = itemView.findViewById(R.id.tvUniverso);
+            tvDescripcion = itemView.findViewById(R.id.heroDescription);
+            tvEstado = itemView.findViewById(R.id.tvEstado);
+            estadoPunto = itemView.findViewById(R.id.estadoPunto);
             tvPopularidad = itemView.findViewById(R.id.tvPopularidad);
-            tvCantidadComics = itemView.findViewById(R.id.tvComicsCount);
+            tvComics = itemView.findViewById(R.id.tvComics);
             btnVerMas = itemView.findViewById(R.id.btnVerMas);
-            btnFavorito = itemView.findViewById(R.id.ivFavorite);
         }
 
         public void bind(Superheroe superheroe) {
-            // Configurar datos básicos
-            tvNombreSuperheroe.setText(superheroe.getNombre());
-            tvUniversoSuperheroe.setText(superheroe.getUniverso());
-            tvDescripcionSuperheroe.setText(superheroe.getDescripcion());
-            
-            // Configurar estado (indicador visual)
-            String estado = superheroe.getEstado();
-            tvEstadoSuperheroe.setBackgroundTintList(context.getColorStateList(
-                estado.equals("Vivo") ? R.color.verde_activo : R.color.rojo_inactivo));
-            
-            // Configurar popularidad
-            int popularidad = superheroe.getPopularidad();
-            pbPopularidad.setProgress(popularidad);
-            tvPopularidad.setText(popularidad + "%");
-            
-            // Configurar cantidad de comics
-            tvCantidadComics.setText(superheroe.getComics().size() + " comics");
-            
-            // Configurar imagen
-            if (superheroe.getImagenUrl() != null && !superheroe.getImagenUrl().isEmpty()) {
-                Picasso.get()
-                    .load(superheroe.getImagenUrl())
-                    .placeholder(R.drawable.placeholder_hero)
-                    .error(R.drawable.error_hero)
-                    .into(ivFotoSuperheroe);
+            // Imagen circular
+            Glide.with(context)
+                .load(superheroe.getImagenUrl())
+                .placeholder(R.drawable.marvel_logo)
+                .error(R.drawable.marvel_logo)
+                .into(ivSuperheroe);
+
+            // Nombre y universo
+            tvNombre.setText(superheroe.getNombre());
+            tvUniverso.setText(superheroe.getUniverso());
+
+            // Descripción recortada
+            if (superheroe.getDescripcion() != null && !superheroe.getDescripcion().isEmpty()) {
+                String desc = superheroe.getDescripcion();
+                if (desc.length() > 40) {
+                    desc = desc.substring(0, 40) + "...";
+                }
+                tvDescripcion.setText(desc);
+                tvDescripcion.setVisibility(View.VISIBLE);
             } else {
-                ivFotoSuperheroe.setImageResource(R.drawable.placeholder_hero);
+                tvDescripcion.setVisibility(View.GONE);
             }
-            
-            // Configurar botón favorito
-            btnFavorito.setImageResource(superheroe.isFavorito() ? 
-                R.drawable.ic_favorite_filled : R.drawable.ic_favorite_border);
-            
-            btnFavorito.setOnClickListener(v -> {
-                superheroe.setFavorito(!superheroe.isFavorito());
-                btnFavorito.setImageResource(superheroe.isFavorito() ? 
-                    R.drawable.ic_favorite_filled : R.drawable.ic_favorite_border);
-                
-                if (favoriteListener != null) {
-                    favoriteListener.onFavoriteClick(superheroe, superheroe.isFavorito());
+
+            // Número de cómics
+            if (superheroe.getComics() != null && !superheroe.getComics().isEmpty()) {
+                tvComics.setText(superheroe.getComics().size() + " cómics");
+                tvComics.setVisibility(View.VISIBLE);
+            } else {
+                tvComics.setText("0 cómics");
+                tvComics.setVisibility(View.VISIBLE);
+            }
+
+            // Estado y punto de color
+            tvEstado.setVisibility(View.GONE);
+            estadoPunto.setVisibility(View.GONE);
+
+            // Popularidad
+            tvPopularidad.setText(superheroe.getPopularidad() + "%");
+
+            // Botón Ver Más
+            btnVerMas.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onVerMasClick(superheroe);
                 }
             });
-            
-            // Configurar botón ver más
-            btnVerMas.setOnClickListener(v -> {
-                Intent intent = new Intent(context, DetalleSuperheroActivity.class);
-                intent.putExtra("superheroe_objeto", superheroe);
-                context.startActivity(intent);
-            });
-            
-            // Agregar animación al hacer clic en el item
-            itemView.setOnClickListener(v -> {
-                // Animación de click
-                v.animate()
-                    .scaleX(0.95f)
-                    .scaleY(0.95f)
-                    .setDuration(100)
-                    .withEndAction(() -> {
-                        v.animate()
-                            .scaleX(1.0f)
-                            .scaleY(1.0f)
-                            .setDuration(100);
-                    });
-                
-                // Ir al detalle
-                btnVerMas.performClick();
-            });
         }
+    }
+
+    public interface OnSuperheroeClickListener {
+        void onSuperheroeClick(Superheroe superheroe);
+        void onFavoritoClick(Superheroe superheroe);
+        void onVerMasClick(Superheroe superheroe);
     }
 } 

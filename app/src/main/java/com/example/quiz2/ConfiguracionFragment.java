@@ -3,6 +3,7 @@ package com.example.quiz2;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -10,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -19,6 +19,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.airbnb.lottie.LottieAnimationView;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -27,19 +31,21 @@ public class ConfiguracionFragment extends Fragment {
 
     private ImageView ivAvatarUsuario;
     private TextView tvNombreUsuario, tvCorreoUsuario;
-    private EditText etNombreEditar, etCorreoEditar, etFechaNacimiento;
     private TextView tvComicsFavoritos, tvHeroesSeguidos, tvSolicitudesRealizadas;
     private TextView tvFechaRegistro, tvUltimoAcceso;
     private Switch switchNotificaciones, switchTemaOscuro, switchSonidos;
     private Button btnEditarPerfil, btnGuardarCambios, btnCancelarEdicion, btnCerrarSesion;
     private View layoutVisualizacion, layoutEdicion, layoutEstadisticas;
     private LottieAnimationView lottieAvatar;
+    private TextView tvValorNombre, tvValorCorreo, tvValorFechaNacimiento;
 
     private String currentUser;
     private SharedPreferences sharedPreferences;
     private boolean isEditMode = false;
     private Calendar fechaNacimiento;
     private SimpleDateFormat dateFormat;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private Uri avatarUri;
 
     @Nullable
     @Override
@@ -48,7 +54,7 @@ public class ConfiguracionFragment extends Fragment {
         
         initializeViews(view);
         setupUserInfo();
-        setupClickListeners();
+        setupClickListeners(view);
         loadUserData();
         loadUserStats();
         loadUserSettings();
@@ -61,11 +67,6 @@ public class ConfiguracionFragment extends Fragment {
         ivAvatarUsuario = view.findViewById(R.id.ivAvatar);
         tvNombreUsuario = view.findViewById(R.id.tvNombreUsuario);
         tvCorreoUsuario = view.findViewById(R.id.tvCorreoUsuario);
-        
-        // Campos de edición
-        etNombreEditar = view.findViewById(R.id.etNombreEditar);
-        etCorreoEditar = view.findViewById(R.id.etCorreoEditar);
-        etFechaNacimiento = view.findViewById(R.id.etFechaNacimiento);
         
         // Estadísticas
         tvComicsFavoritos = view.findViewById(R.id.tvComicsFavoritos);
@@ -93,6 +94,10 @@ public class ConfiguracionFragment extends Fragment {
         // Inicializar calendario
         fechaNacimiento = Calendar.getInstance();
         dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+        tvValorNombre = view.findViewById(R.id.tvValorNombre);
+        tvValorCorreo = view.findViewById(R.id.tvValorCorreo);
+        tvValorFechaNacimiento = view.findViewById(R.id.tvValorFechaNacimiento);
     }
 
     private void setupUserInfo() {
@@ -100,138 +105,129 @@ public class ConfiguracionFragment extends Fragment {
             MainMarvelActivity mainActivity = (MainMarvelActivity) getActivity();
             currentUser = mainActivity.getCurrentUser();
             sharedPreferences = mainActivity.getMarvelSharedPreferences();
-        }
-    }
-
-    private void setupClickListeners() {
-        btnEditarPerfil.setOnClickListener(v -> enableEditMode());
-        btnGuardarCambios.setOnClickListener(v -> saveChanges());
-        btnCancelarEdicion.setOnClickListener(v -> cancelEdit());
-        btnCerrarSesion.setOnClickListener(v -> showLogoutDialog());
-        
-        etFechaNacimiento.setOnClickListener(v -> showDatePicker());
-        
-        // Listeners para switches
-        switchNotificaciones.setOnCheckedChangeListener((buttonView, isChecked) -> 
-            saveSettingPreference("notificaciones", isChecked));
-        
-        switchTemaOscuro.setOnCheckedChangeListener((buttonView, isChecked) -> 
-            saveSettingPreference("tema_oscuro", isChecked));
-        
-        switchSonidos.setOnCheckedChangeListener((buttonView, isChecked) -> 
-            saveSettingPreference("sonidos", isChecked));
-    }
-
-    private void loadUserData() {
-        if (currentUser != null && sharedPreferences != null) {
-            String nombreUsuario = sharedPreferences.getString("name_" + currentUser, currentUser);
-            String correoUsuario = sharedPreferences.getString("user_" + currentUser, currentUser);
-            String fechaNac = sharedPreferences.getString("birthdate_" + currentUser, "No especificada");
             
-            tvNombreUsuario.setText(nombreUsuario);
-            tvCorreoUsuario.setText(correoUsuario);
+            // Mostrar nombre de usuario
+            String nombreCompleto = sharedPreferences.getString("userName", currentUser);
+            tvNombreUsuario.setText(nombreCompleto);
             
-            // Cargar datos en campos de edición
-            etNombreEditar.setText(nombreUsuario);
-            etCorreoEditar.setText(correoUsuario);
-            etFechaNacimiento.setText(fechaNac);
+            // Mostrar correo
+            String correo = sharedPreferences.getString("userEmail", currentUser + "@marvel.com");
+            tvCorreoUsuario.setText(correo);
             
             // Mostrar fecha de registro
-            long registrationDate = sharedPreferences.getLong("registration_date_" + currentUser, System.currentTimeMillis());
-            String fechaRegistro = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(registrationDate);
+            String fechaRegistro = sharedPreferences.getString("registerDate", "01/01/2024");
             tvFechaRegistro.setText(fechaRegistro);
             
             // Mostrar último acceso
-            long loginTime = sharedPreferences.getLong("loginTime", System.currentTimeMillis());
-            String ultimoAcceso = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(loginTime);
+            String ultimoAcceso = sharedPreferences.getString("lastAccess", "01/01/2024 12:00");
             tvUltimoAcceso.setText(ultimoAcceso);
         }
     }
 
-    private void loadUserStats() {
+    private void loadUserData() {
         if (currentUser != null && sharedPreferences != null) {
-            int comicsFavoritos = sharedPreferences.getInt("comics_favoritos_" + currentUser, 0);
-            int heroesSeguidos = sharedPreferences.getInt("heroes_seguidos_" + currentUser, 0);
-            int solicitudesRealizadas = sharedPreferences.getInt("solicitudes_realizadas_" + currentUser, 0);
-            
-            tvComicsFavoritos.setText(String.valueOf(comicsFavoritos));
-            tvHeroesSeguidos.setText(String.valueOf(heroesSeguidos));
-            tvSolicitudesRealizadas.setText(String.valueOf(solicitudesRealizadas));
+            String nombreUsuario = sharedPreferences.getString("userName", currentUser);
+            String correoUsuario = sharedPreferences.getString("userEmail", currentUser + "@marvel.com");
+            String fechaNac = sharedPreferences.getString("birthdate", "No especificada");
+            tvNombreUsuario.setText(nombreUsuario);
+            tvCorreoUsuario.setText(correoUsuario);
+            // Mostrar valores reales en la sección de información personal
+            tvValorNombre.setText(nombreUsuario);
+            tvValorCorreo.setText(correoUsuario);
+            tvValorFechaNacimiento.setText(fechaNac);
+            // Mostrar fecha de registro
+            long registrationDate = sharedPreferences.getLong("registration_date_" + currentUser, System.currentTimeMillis());
+            String fechaRegistro = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(registrationDate);
+            tvFechaRegistro.setText(fechaRegistro);
+            // Mostrar último acceso
+            long loginTime = sharedPreferences.getLong("loginTime", System.currentTimeMillis());
+            String ultimoAcceso = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(loginTime);
+            tvUltimoAcceso.setText(ultimoAcceso);
+            // Cargar avatar si existe y es seguro
+            String avatarUriString = sharedPreferences.getString("avatarUri", null);
+            if (avatarUriString != null && avatarUriString.startsWith("file://")) {
+                avatarUri = Uri.parse(avatarUriString);
+                ivAvatarUsuario.setImageURI(avatarUri);
+            } else {
+                ivAvatarUsuario.setImageResource(R.drawable.ic_person);
+            }
         }
+    }
+
+    private void loadUserStats() {
+        // Cargar estadísticas del usuario
+        int comicsFavoritos = sharedPreferences.getInt("favoriteComics", 0);
+        int heroesSeguidos = sharedPreferences.getInt("followedHeroes", 0);
+        int solicitudes = sharedPreferences.getInt("requests", 0);
+        
+        tvComicsFavoritos.setText(String.valueOf(comicsFavoritos));
+        tvHeroesSeguidos.setText(String.valueOf(heroesSeguidos));
+        tvSolicitudesRealizadas.setText(String.valueOf(solicitudes));
     }
 
     private void loadUserSettings() {
-        if (currentUser != null && sharedPreferences != null) {
-            boolean notificaciones = sharedPreferences.getBoolean("setting_notificaciones_" + currentUser, true);
-            boolean temaOscuro = sharedPreferences.getBoolean("setting_tema_oscuro_" + currentUser, true);
-            boolean sonidos = sharedPreferences.getBoolean("setting_sonidos_" + currentUser, true);
-            
-            switchNotificaciones.setChecked(notificaciones);
-            switchTemaOscuro.setChecked(temaOscuro);
-            switchSonidos.setChecked(sonidos);
+        // Cargar configuraciones guardadas
+        boolean notificaciones = sharedPreferences.getBoolean("notifications", true);
+        boolean temaOscuro = sharedPreferences.getBoolean("darkTheme", true);
+        boolean sonidos = sharedPreferences.getBoolean("sounds", true);
+        
+        switchNotificaciones.setChecked(notificaciones);
+        switchTemaOscuro.setChecked(temaOscuro);
+        switchSonidos.setChecked(sonidos);
+    }
+
+    private void saveUserSettings() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("notifications", switchNotificaciones.isChecked());
+        editor.putBoolean("darkTheme", switchTemaOscuro.isChecked());
+        editor.putBoolean("sounds", switchSonidos.isChecked());
+        editor.apply();
+    }
+
+    private void setupClickListeners(View view) {
+        btnEditarPerfil.setOnClickListener(v -> toggleEditMode(true));
+        btnCancelarEdicion.setOnClickListener(v -> toggleEditMode(false));
+        btnGuardarCambios.setOnClickListener(v -> saveChanges());
+        btnCerrarSesion.setOnClickListener(v -> logout());
+        ivAvatarUsuario.setOnClickListener(v -> openImagePicker());
+        // Configurar switches
+        switchNotificaciones.setOnCheckedChangeListener((buttonView, isChecked) -> saveUserSettings());
+        switchTemaOscuro.setOnCheckedChangeListener((buttonView, isChecked) -> saveUserSettings());
+        switchSonidos.setOnCheckedChangeListener((buttonView, isChecked) -> saveUserSettings());
+    }
+
+    private void toggleEditMode(boolean enable) {
+        isEditMode = enable;
+        layoutVisualizacion.setVisibility(enable ? View.GONE : View.VISIBLE);
+        layoutEdicion.setVisibility(enable ? View.VISIBLE : View.GONE);
+        
+        if (enable) {
+            tvNombreUsuario.setText(tvNombreUsuario.getText());
+            tvCorreoUsuario.setText(tvCorreoUsuario.getText());
         }
-    }
-
-    private void enableEditMode() {
-        isEditMode = true;
-        layoutVisualizacion.setVisibility(View.GONE);
-        layoutEdicion.setVisibility(View.VISIBLE);
-        
-        // Animación de transición
-        layoutEdicion.setAlpha(0f);
-        layoutEdicion.animate()
-            .alpha(1f)
-            .setDuration(300)
-            .start();
-    }
-
-    private void cancelEdit() {
-        isEditMode = false;
-        layoutEdicion.setVisibility(View.GONE);
-        layoutVisualizacion.setVisibility(View.VISIBLE);
-        
-        // Restaurar valores originales
-        loadUserData();
-        
-        // Animación de transición
-        layoutVisualizacion.setAlpha(0f);
-        layoutVisualizacion.animate()
-            .alpha(1f)
-            .setDuration(300)
-            .start();
     }
 
     private void saveChanges() {
-        String nuevoNombre = etNombreEditar.getText().toString().trim();
-        String nuevoCorreo = etCorreoEditar.getText().toString().trim();
-        String nuevaFecha = etFechaNacimiento.getText().toString().trim();
-        
-        if (TextUtils.isEmpty(nuevoNombre)) {
-            etNombreEditar.setError("El nombre no puede estar vacío");
+        String nuevoNombre = tvNombreUsuario.getText().toString().trim();
+        String nuevoCorreo = tvCorreoUsuario.getText().toString().trim();
+        if (TextUtils.isEmpty(nuevoNombre) || TextUtils.isEmpty(nuevoCorreo)) {
+            Toast.makeText(getContext(), "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
-        
-        if (TextUtils.isEmpty(nuevoCorreo) || !Patterns.EMAIL_ADDRESS.matcher(nuevoCorreo).matches()) {
-            etCorreoEditar.setError("Ingrese un correo válido");
+        if (!Patterns.EMAIL_ADDRESS.matcher(nuevoCorreo).matches()) {
+            Toast.makeText(getContext(), "Por favor ingresa un correo válido", Toast.LENGTH_SHORT).show();
             return;
         }
-        
-        if (sharedPreferences != null) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("name_" + currentUser, nuevoNombre);
-            editor.putString("user_" + currentUser, nuevoCorreo);
-            editor.putString("birthdate_" + currentUser, nuevaFecha);
-            editor.apply();
-            
-            // Actualizar UI
-            tvNombreUsuario.setText(nuevoNombre);
-            tvCorreoUsuario.setText(nuevoCorreo);
-            
-            // Volver a modo visualización
-            cancelEdit();
-            
-            Toast.makeText(getContext(), "Cambios guardados exitosamente", Toast.LENGTH_SHORT).show();
-        }
+        // Guardar cambios
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userName", nuevoNombre);
+        editor.putString("userEmail", nuevoCorreo);
+        editor.apply();
+        // Actualizar UI
+        tvNombreUsuario.setText(nuevoNombre);
+        tvCorreoUsuario.setText(nuevoCorreo);
+        toggleEditMode(false);
+        Toast.makeText(getContext(), "Cambios guardados", Toast.LENGTH_SHORT).show();
     }
 
     private void showDatePicker() {
@@ -239,7 +235,7 @@ public class ConfiguracionFragment extends Fragment {
             requireContext(),
             (view, year, month, dayOfMonth) -> {
                 fechaNacimiento.set(year, month, dayOfMonth);
-                etFechaNacimiento.setText(dateFormat.format(fechaNacimiento.getTime()));
+                tvValorFechaNacimiento.setText(dateFormat.format(fechaNacimiento.getTime()));
             },
             fechaNacimiento.get(Calendar.YEAR),
             fechaNacimiento.get(Calendar.MONTH),
@@ -248,35 +244,58 @@ public class ConfiguracionFragment extends Fragment {
         datePickerDialog.show();
     }
 
-    private void saveSettingPreference(String setting, boolean value) {
-        if (sharedPreferences != null) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("setting_" + setting + "_" + currentUser, value);
-            editor.apply();
-        }
-    }
-
-    private void showLogoutDialog() {
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Cerrar Sesión")
-            .setMessage("¿Estás seguro que deseas cerrar sesión?")
-            .setPositiveButton("Sí", (dialog, which) -> logout())
-            .setNegativeButton("No", null)
-            .show();
-    }
-
     private void logout() {
-        if (sharedPreferences != null) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("isLoggedIn", false);
-            editor.apply();
-        }
+        // Limpiar preferencias
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
         
-        // Redirigir a la pantalla de login
+        // Redirigir al login
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        requireActivity().finish();
+        getActivity().finish();
+    }
+
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == getActivity().RESULT_OK && data != null && data.getData() != null) {
+            Uri selectedImageUri = data.getData();
+            // Copiar la imagen a almacenamiento interno
+            Uri internalUri = copyImageToInternalStorage(selectedImageUri);
+            if (internalUri != null) {
+                avatarUri = internalUri;
+                ivAvatarUsuario.setImageURI(avatarUri);
+                sharedPreferences.edit().putString("avatarUri", avatarUri.toString()).apply();
+            }
+        }
+    }
+
+    private Uri copyImageToInternalStorage(Uri sourceUri) {
+        try {
+            InputStream inputStream = getContext().getContentResolver().openInputStream(sourceUri);
+            if (inputStream == null) return null;
+            File avatarFile = new File(getContext().getFilesDir(), "avatar.jpg");
+            FileOutputStream outputStream = new FileOutputStream(avatarFile);
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            outputStream.close();
+            inputStream.close();
+            return Uri.fromFile(avatarFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override

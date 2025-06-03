@@ -36,6 +36,15 @@ public class MarvelResponse {
         @SerializedName("comics")
         private ComicList comics;
 
+        @SerializedName("series")
+        private ComicList series;
+
+        @SerializedName("stories")
+        private ComicList stories;
+
+        @SerializedName("events")
+        private ComicList events;
+
         @SerializedName("universe")
         private String universe;
 
@@ -44,6 +53,9 @@ public class MarvelResponse {
 
         @SerializedName("popularity")
         private int popularity;
+
+        @SerializedName("modified")
+        private String modified;
 
         public int getId() {
             return id;
@@ -65,6 +77,18 @@ public class MarvelResponse {
             return comics;
         }
 
+        public ComicList getSeries() {
+            return series;
+        }
+
+        public ComicList getStories() {
+            return stories;
+        }
+
+        public ComicList getEvents() {
+            return events;
+        }
+
         public String getUniverse() {
             return universe != null ? universe : "Marvel 616";
         }
@@ -75,6 +99,10 @@ public class MarvelResponse {
 
         public int getPopularity() {
             return popularity;
+        }
+
+        public String getModified() {
+            return modified;
         }
     }
 
@@ -94,12 +122,19 @@ public class MarvelResponse {
         @SerializedName("name")
         private String name;
 
+        @SerializedName("modified")
+        private String modified;
+
         public String getResourceURI() {
             return resourceURI;
         }
 
         public String getName() {
             return name;
+        }
+
+        public String getModified() {
+            return modified;
         }
     }
 

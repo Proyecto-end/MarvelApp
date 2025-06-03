@@ -28,9 +28,8 @@ public class DetalleSuperheroActivity extends AppCompatActivity {
     private Chip chipUniverso, chipEstado;
     private TextView tvPopularidadTexto;
     private ProgressBar pbPopularidad;
-    private ImageView btnFavorito;
     private MaterialButton btnCompartir;
-    private RecyclerView recyclerPoderes, recyclerComics;
+    private RecyclerView recyclerComics;
     
     private String superheroeName;
     private boolean isFavorite = false;
@@ -53,16 +52,14 @@ public class DetalleSuperheroActivity extends AppCompatActivity {
 
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
-        ivSuperheroeFoto = findViewById(R.id.heroImage);
-        tvSuperheroeName = findViewById(R.id.heroName);
-        tvSuperheroDescription = findViewById(R.id.heroDescription);
+        ivSuperheroeFoto = findViewById(R.id.ivHeroImage);
+        tvSuperheroeName = findViewById(R.id.tvHeroName);
+        tvSuperheroDescription = findViewById(R.id.tvDescription);
         chipUniverso = findViewById(R.id.chipUniverso);
         chipEstado = findViewById(R.id.chipEstado);
         tvPopularidadTexto = findViewById(R.id.tvPopularidad);
         pbPopularidad = findViewById(R.id.pbPopularidad);
-        btnFavorito = findViewById(R.id.ivFavorite);
         btnCompartir = findViewById(R.id.btnCompartir);
-        recyclerPoderes = findViewById(R.id.recyclerPoderes);
         recyclerComics = findViewById(R.id.recyclerComics);
     }
 
@@ -78,14 +75,30 @@ public class DetalleSuperheroActivity extends AppCompatActivity {
     }
 
     private void mostrarDatosSuperheroe() {
-        tvSuperheroeName.setText(superheroe.getNombre());
-        tvSuperheroDescription.setText(superheroe.getDescripcion());
-        chipUniverso.setText(superheroe.getUniverso());
-        chipEstado.setText(superheroe.getEstado());
+        superheroeName = superheroe.getNombre();
+        tvSuperheroeName.setText(superheroeName);
+        tvSuperheroDescription.setText(superheroe.getDescripcion() != null && !superheroe.getDescripcion().isEmpty() ? superheroe.getDescripcion() : "Sin descripción disponible");
+        chipUniverso.setText(superheroe.getUniverso() != null ? superheroe.getUniverso() : "-");
+        chipEstado.setText(superheroe.getEstado() != null ? superheroe.getEstado() : "-");
         chipEstado.setChipBackgroundColorResource(
-            "Activo".equals(superheroe.getEstado()) ? R.color.verde_activo : R.color.rojo_inactivo);
+            "Activo".equalsIgnoreCase(superheroe.getEstado()) ? R.color.verde_activo : R.color.rojo_inactivo);
         pbPopularidad.setProgress(superheroe.getPopularidad());
         tvPopularidadTexto.setText(superheroe.getPopularidad() + "% Popularidad");
+
+        // Número de cómics
+        TextView tvComicsCount = findViewById(R.id.tvComicsCount);
+        if (tvComicsCount != null) {
+            int comicsCount = (superheroe.getComics() != null) ? superheroe.getComics().size() : 0;
+            tvComicsCount.setText(String.valueOf(comicsCount));
+        }
+
+        // Debut
+        TextView tvPrimeraAparicion = findViewById(R.id.tvPrimeraAparicion);
+        if (tvPrimeraAparicion != null) {
+            String debut = (superheroe.getPrimeraAparicion() != null && !superheroe.getPrimeraAparicion().isEmpty()) ? superheroe.getPrimeraAparicion() : "-";
+            tvPrimeraAparicion.setText(debut);
+        }
+
         if (superheroe.getImagenUrl() != null && !superheroe.getImagenUrl().isEmpty()) {
             Picasso.get()
                 .load(superheroe.getImagenUrl())
@@ -95,112 +108,39 @@ public class DetalleSuperheroActivity extends AppCompatActivity {
         } else {
             ivSuperheroeFoto.setImageResource(R.drawable.placeholder_hero);
         }
-        // Puedes agregar aquí más campos si lo deseas (comics, poderes, etc.)
-    }
 
-    private void setupHeroSpecificData(String heroName) {
-        List<String> poderes;
-        List<String> comics;
-        
-        switch (heroName) {
-            case "Spider-Man":
-                poderes = Arrays.asList(
-                    "Fuerza sobrehumana",
-                    "Agilidad y velocidad aumentadas",
-                    "Sentido arácnido",
-                    "Lanzar telarañas",
-                    "Adherencia a superficies",
-                    "Reflejos mejorados"
-                );
-                comics = Arrays.asList(
-                    "The Amazing Spider-Man #1",
-                    "Spider-Man: No Way Home",
-                    "Ultimate Spider-Man",
-                    "Spider-Verse",
-                    "Web of Spider-Man"
-                );
-                break;
-                
-            case "Iron Man":
-                poderes = Arrays.asList(
-                    "Inteligencia genial",
-                    "Armadura Mark avanzada",
-                    "Vuelo propulsado",
-                    "Repulsores de energía",
-                    "Múltiples sistemas de armas",
-                    "Análisis en tiempo real"
-                );
-                comics = Arrays.asList(
-                    "Iron Man #1",
-                    "Avengers Assemble",
-                    "Civil War",
-                    "Armor Wars",
-                    "Extremis"
-                );
-                break;
-                
-            case "Wolverine":
-                poderes = Arrays.asList(
-                    "Factor de curación acelerado",
-                    "Garras de adamantium",
-                    "Esqueleto de adamantium",
-                    "Sentidos sobrehumanos",
-                    "Resistencia sobrehumana",
-                    "Instintos animales"
-                );
-                comics = Arrays.asList(
-                    "X-Men Origins: Wolverine",
-                    "Logan",
-                    "Days of Future Past",
-                    "Old Man Logan",
-                    "Weapon X"
-                );
-                break;
-                
-            case "Captain America":
-                poderes = Arrays.asList(
-                    "Fuerza sobrehumana",
-                    "Agilidad y velocidad aumentadas",
-                    "Escudo de vibranium",
-                    "Liderazgo nato",
-                    "Resistencia aumentada",
-                    "Combate experto"
-                );
-                comics = Arrays.asList(
-                    "Captain America #1",
-                    "Civil War",
-                    "The Winter Soldier",
-                    "First Avenger",
-                    "Secret Empire"
-                );
-                break;
-                
-            case "Doctor Strange":
-                poderes = Arrays.asList(
-                    "Magia suprema",
-                    "Viaje dimensional",
-                    "Clarividencia",
-                    "Levitación",
-                    "Manipulación del tiempo",
-                    "Hechizos de protección"
-                );
-                comics = Arrays.asList(
-                    "Doctor Strange #1",
-                    "Multiverse of Madness",
-                    "The Oath",
-                    "Triumph and Torment",
-                    "What If...?"
-                );
-                break;
-                
-            default:
-                poderes = Arrays.asList("Poderes no especificados");
-                comics = Arrays.asList("Comics no especificados");
-                break;
+        // Mostrar cómics si existen
+        if (superheroe.getComics() != null && !superheroe.getComics().isEmpty()) {
+            setupRecyclerView(recyclerComics, superheroe.getComics(), "comics");
+            recyclerComics.setVisibility(View.VISIBLE);
+        } else {
+            recyclerComics.setVisibility(View.GONE);
         }
-        
-        setupRecyclerView(recyclerPoderes, poderes, "poderes");
-        setupRecyclerView(recyclerComics, comics, "comics");
+
+        // Mostrar series si existen
+        RecyclerView recyclerSeries = findViewById(R.id.recyclerSeries);
+        if (superheroe.getSeries() != null && !superheroe.getSeries().isEmpty()) {
+            setupRecyclerView(recyclerSeries, superheroe.getSeries(), "series");
+            recyclerSeries.setVisibility(View.VISIBLE);
+        } else {
+            recyclerSeries.setVisibility(View.GONE);
+        }
+        // Mostrar historias si existen
+        RecyclerView recyclerStories = findViewById(R.id.recyclerStories);
+        if (superheroe.getStories() != null && !superheroe.getStories().isEmpty()) {
+            setupRecyclerView(recyclerStories, superheroe.getStories(), "stories");
+            recyclerStories.setVisibility(View.VISIBLE);
+        } else {
+            recyclerStories.setVisibility(View.GONE);
+        }
+        // Mostrar eventos si existen
+        RecyclerView recyclerEvents = findViewById(R.id.recyclerEvents);
+        if (superheroe.getEvents() != null && !superheroe.getEvents().isEmpty()) {
+            setupRecyclerView(recyclerEvents, superheroe.getEvents(), "events");
+            recyclerEvents.setVisibility(View.VISIBLE);
+        } else {
+            recyclerEvents.setVisibility(View.GONE);
+        }
     }
 
     private void setupRecyclerView(RecyclerView recycler, List<String> items, String tipo) {
@@ -209,19 +149,7 @@ public class DetalleSuperheroActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners() {
-        btnFavorito.setOnClickListener(v -> toggleFavorite());
         btnCompartir.setOnClickListener(v -> shareHero());
-    }
-
-    private void toggleFavorite() {
-        isFavorite = !isFavorite;
-        btnFavorito.setImageResource(isFavorite ? 
-            R.drawable.ic_favorite_filled : R.drawable.ic_favorite_border);
-        
-        String mensaje = isFavorite ? 
-            superheroeName + " agregado a favoritos" : 
-            superheroeName + " removido de favoritos";
-        Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
     }
 
     private void shareHero() {

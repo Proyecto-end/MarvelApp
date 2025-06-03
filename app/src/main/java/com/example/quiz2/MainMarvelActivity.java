@@ -48,10 +48,19 @@ public class MainMarvelActivity extends AppCompatActivity {
             return;
         }
         
-        // Cargar fragment inicial
+        // Cargar fragmento guardado o HomeFragment por defecto
         if (savedInstanceState == null) {
-            loadFragment(new HomeFragment());
-            bottomNavigation.setSelectedItemId(R.id.nav_home);
+            int lastFragment = sharedPreferences.getInt("lastFragment", R.id.nav_home);
+            Fragment selectedFragment;
+            if (lastFragment == R.id.nav_configuracion) {
+                selectedFragment = new ConfiguracionFragment();
+            } else if (lastFragment == R.id.nav_solicitar) {
+                selectedFragment = new SolicitarFragment();
+            } else {
+                selectedFragment = new HomeFragment();
+            }
+            loadFragment(selectedFragment);
+            bottomNavigation.setSelectedItemId(lastFragment);
         }
 
         // Ejemplo de llamada a la API
@@ -121,6 +130,8 @@ public class MainMarvelActivity extends AppCompatActivity {
                 }
 
                 if (selectedFragment != null) {
+                    // Guardar el último fragmento seleccionado
+                    sharedPreferences.edit().putInt("lastFragment", itemId).apply();
                     loadFragment(selectedFragment);
                     return true;
                 }

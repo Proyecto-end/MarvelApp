@@ -194,7 +194,12 @@ public class RegistroActivity extends AppCompatActivity {
                         Toast.makeText(RegistroActivity.this, 
                             "Registro exitoso. Por favor inicia sesión.", 
                             Toast.LENGTH_LONG).show();
-                        
+                        // Guardar datos en SharedPreferences
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("userName", name);
+                        editor.putString("userEmail", email);
+                        editor.putString("birthdate", birthDate);
+                        editor.apply();
                         Intent intent = new Intent(RegistroActivity.this, LoginActivity.class);
                         intent.putExtra("registered_email", email);
                         startActivity(intent);

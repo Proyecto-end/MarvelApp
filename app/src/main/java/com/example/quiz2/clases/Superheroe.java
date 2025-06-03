@@ -16,9 +16,14 @@ public class Superheroe implements java.io.Serializable {
     private int popularidad;
     private boolean favorito;
     private List<String> grupos; // Lista de grupos a los que pertenece el superhéroe
+    private List<String> series;
+    private List<String> stories;
+    private List<String> events;
 
     public Superheroe() {
         this.grupos = new ArrayList<>();
+        this.poderes = new ArrayList<>();
+        this.comics = new ArrayList<>();
     }
 
     public Superheroe(int id, String nombre, String descripcion, String imagenUrl) {
@@ -27,6 +32,8 @@ public class Superheroe implements java.io.Serializable {
         this.descripcion = descripcion;
         this.imagenUrl = imagenUrl;
         this.grupos = new ArrayList<>();
+        this.poderes = new ArrayList<>();
+        this.comics = new ArrayList<>();
     }
 
     // Getters y Setters
@@ -131,5 +138,29 @@ public class Superheroe implements java.io.Serializable {
             this.grupos = new ArrayList<>();
         }
         this.grupos.add(grupo);
+    }
+
+    public List<String> getSeries() {
+        return series;
+    }
+
+    public void setSeries(List<String> series) {
+        this.series = series;
+    }
+
+    public List<String> getStories() {
+        return stories;
+    }
+
+    public void setStories(List<String> stories) {
+        this.stories = stories;
+    }
+
+    public List<String> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<String> events) {
+        this.events = events;
     }
 } 

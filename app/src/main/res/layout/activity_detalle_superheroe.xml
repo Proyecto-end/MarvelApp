@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/marvel_black">
+    android:background="@color/marvel_red">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:background="@color/marvel_black"
+        android:background="@color/marvel_red"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -32,7 +32,7 @@
                 android:scaleType="centerCrop"
                 android:foreground="@drawable/gradient_overlay"
                 app:layout_collapseMode="parallax"
-                tools:src="@drawable/marvel_logo" />
+                 />
 
             <!-- Toolbar -->
             <androidx.appcompat.widget.Toolbar
@@ -64,10 +64,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/marvel_medium_gray"
+                app:cardBackgroundColor="@color/black"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="8dp"
-                app:strokeColor="@color/marvel_red"
+                app:strokeColor="@color/marvel_dark_red"
                 app:strokeWidth="2dp">
 
                 <LinearLayout
@@ -94,17 +94,6 @@
                             android:textSize="28sp"
                             android:textStyle="bold"
                             android:fontFamily="sans-serif-black" />
-
-                        <ImageView
-                            android:id="@+id/ivFavorite"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@drawable/ic_favorite_border"
-                            android:tint="@color/marvel_red"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:background="?android:attr/selectableItemBackgroundBorderless"
-                            android:padding="4dp" />
 
                     </LinearLayout>
 
@@ -149,7 +138,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:gravity="center">
 
                         <!-- Popularidad -->
                         <LinearLayout
@@ -157,7 +147,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical"
-                            android:gravity="center">
+                            android:gravity="center_horizontal">
 
                             <ImageView
                                 android:layout_width="24dp"
@@ -170,6 +160,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
+                                android:layout_gravity="center_horizontal"
                                 android:text="4.8"
                                 android:textColor="@color/marvel_gold"
                                 android:textSize="18sp"
@@ -260,24 +251,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:progressTint="@color/marvel_gold"
-                        android:progressBackgroundTint="@color/marvel_medium_gray" />
-
-                    <!-- Poderes Section -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Poderes"
-                        android:textColor="@color/marvel_white"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="8dp" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerPoderes"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false" />
+                        android:progressBackgroundTint="@android:color/black" />
 
                     <!-- Comics Section -->
                     <TextView
@@ -294,104 +268,59 @@
                         android:id="@+id/recyclerComics"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        />
+
+                    <!-- Series Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Series"
+                        android:textColor="@color/marvel_blue"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="8dp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerSeries"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false" />
 
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Poderes Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/marvel_medium_gray"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                app:strokeColor="@color/marvel_purple"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
+                    <!-- Stories Section -->
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="SUPERPODERES"
-                        android:textColor="@color/marvel_white"
-                        android:textSize="18sp"
+                        android:text="Historias"
+                        android:textColor="@color/marvel_red"
+                        android:textSize="20sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="16dp"
-                        android:letterSpacing="0.1" />
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="8dp" />
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerViewPoderes"
+                        android:id="@+id/recyclerStories"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                        android:nestedScrollingEnabled="false" />
 
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Comics Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/marvel_medium_gray"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                app:strokeColor="@color/marvel_blue"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Events Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="COMICS DESTACADOS"
-                            android:textColor="@color/marvel_white"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:letterSpacing="0.1" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ver todos"
-                            android:textColor="@color/marvel_blue"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:background="?android:attr/selectableItemBackground"
-                            android:padding="8dp" />
-
-                    </LinearLayout>
+                        android:text="Eventos"
+                        android:textColor="@color/marvel_white"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="8dp" />
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerViewComics"
+                        android:id="@+id/recyclerEvents"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                        android:nestedScrollingEnabled="false" />
 
                 </LinearLayout>
 

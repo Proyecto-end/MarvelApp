@@ -31,8 +31,10 @@ import com.example.quiz2.api.ApiConfig;
 import com.example.quiz2.api.MarvelApiClient;
 import com.example.quiz2.api.MarvelResponse;
 import com.example.quiz2.MainMarvelActivity;
+import android.content.Intent;
+import java.lang.StringBuilder;
 
-public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperheroeFavoriteListener {
+public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperheroeClickListener {
 
     private RecyclerView recyclerViewSuperheroes;
     private SuperheroeAdapter adapter;
@@ -63,6 +65,15 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
         loadSuperheroes();
         
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        
+        setupRecyclerView();
+        loadSuperheroes();
+        setupSwipeRefresh();
     }
 
     private void initializeViews(View view) {
@@ -123,8 +134,7 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
     private void setupRecyclerView() {
         recyclerViewSuperheroes.setLayoutManager(new LinearLayoutManager(getContext()));
         superheroesCompletos = new ArrayList<>();
-        adapter = new SuperheroeAdapter(getContext(), superheroesCompletos);
-        adapter.setOnSuperheroeFavoriteListener(this);
+        adapter = new SuperheroeAdapter(getContext(), superheroesCompletos, this);
         recyclerViewSuperheroes.setAdapter(adapter);
     }
 
@@ -275,6 +285,11 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
             hero.setDescripcion(character.getDescription());
             hero.setUniverso(character.getUniverse());
             
+            // Asignar fecha de primera aparición
+            if (character.getModified() != null) {
+                hero.setPrimeraAparicion(character.getModified().substring(0, 10));
+            }
+            
             // Asignar grupos basado en el nombre y descripción
             String nombre = character.getName().toLowerCase();
             String descripcion = character.getDescription().toLowerCase();
@@ -333,9 +348,37 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
             if (character.getComics() != null && character.getComics().getItems() != null) {
                 List<String> comicTitles = new ArrayList<>();
                 for (MarvelResponse.ComicSummary comic : character.getComics().getItems()) {
-                    comicTitles.add(comic.getName());
+                    String fecha = comic.getModified() != null ? " (" + comic.getModified().substring(0, 10) + ")" : "";
+                    comicTitles.add(comic.getName() + fecha);
                 }
                 hero.setComics(comicTitles);
+            }
+            // Obtener series del personaje
+            if (character.getSeries() != null && character.getSeries().getItems() != null) {
+                List<String> seriesTitles = new ArrayList<>();
+                for (MarvelResponse.ComicSummary serie : character.getSeries().getItems()) {
+                    String fecha = serie.getModified() != null ? " (" + serie.getModified().substring(0, 10) + ")" : "";
+                    seriesTitles.add(serie.getName() + fecha);
+                }
+                hero.setSeries(seriesTitles);
+            }
+            // Obtener historias del personaje
+            if (character.getStories() != null && character.getStories().getItems() != null) {
+                List<String> storyTitles = new ArrayList<>();
+                for (MarvelResponse.ComicSummary story : character.getStories().getItems()) {
+                    String fecha = story.getModified() != null ? " (" + story.getModified().substring(0, 10) + ")" : "";
+                    storyTitles.add(story.getName() + fecha);
+                }
+                hero.setStories(storyTitles);
+            }
+            // Obtener eventos del personaje
+            if (character.getEvents() != null && character.getEvents().getItems() != null) {
+                List<String> eventTitles = new ArrayList<>();
+                for (MarvelResponse.ComicSummary event : character.getEvents().getItems()) {
+                    String fecha = event.getModified() != null ? " (" + event.getModified().substring(0, 10) + ")" : "";
+                    eventTitles.add(event.getName() + fecha);
+                }
+                hero.setEvents(eventTitles);
             }
             
             hero.setPopularidad(character.getPopularity());
@@ -397,10 +440,45 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
     }
 
     @Override
-    public void onFavoriteClick(Superheroe superheroe, boolean isFavorite) {
-        String mensaje = isFavorite ? 
-            superheroe.getNombre() + " agregado a favoritos" : 
-            superheroe.getNombre() + " removido de favoritos";
-        Toast.makeText(getContext(), mensaje, Toast.LENGTH_SHORT).show();
+    public void onSuperheroeClick(Superheroe superheroe) {
+        // Navegar a la pantalla de detalles
+        Intent intent = new Intent(requireContext(), DetalleSuperheroActivity.class);
+        intent.putExtra("superheroe_objeto", superheroe);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onFavoritoClick(Superheroe superheroe) {
+        // Actualizar el estado de favorito
+        superheroe.setFavorito(!superheroe.isFavorito());
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onVerMasClick(Superheroe superheroe) {
+        // Navegar a la pantalla de detalles
+        Intent intent = new Intent(requireContext(), DetalleSuperheroActivity.class);
+        intent.putExtra("superheroe_objeto", superheroe);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        recyclerViewSuperheroes = null;
+        etBusqueda = null;
+        swipeRefreshLayout = null;
+        lottieLoading = null;
+        tvBienvenida = null;
+        layoutEstadoVacio = null;
+        superheroesCompletos = null;
+        currentUser = null;
+        sharedPreferences = null;
+        filtroActual = null;
+        chipTodos = null;
+        chipAvengers = null;
+        chipXMen = null;
+        chipFantasticFour = null;
+        adapter = null;
     }
 } 

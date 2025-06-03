@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="Marvel Heroes"
         app:titleTextColor="@color/marvel_white"
-        app:logo="@drawable/marvel_logo_small"
+        app:logo="@drawable/marvel_login_logo"
         app:menu="@menu/toolbar_menu" />
 
     <!-- Fragment Container -->

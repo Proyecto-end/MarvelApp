@@ -95,5 +95,5 @@ app.post('/api/auth/login', (req, res) => {
 // Iniciar servidor
 app.listen(port, '0.0.0.0', () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
-    console.log(`También accesible en http://192.168.174.163:${port}`);
+    console.log(`También accesible en http://192.168.1.59:${port}`);
 }); 
