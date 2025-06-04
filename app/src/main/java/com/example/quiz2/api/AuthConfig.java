@@ -10,7 +10,7 @@ import android.util.Log;
 public class AuthConfig {
     private static final String TAG = "AuthConfig";
     // URL para dispositivo físico
-    public static final String BASE_URL = "http://192.168.1.59:3000/api/";
+    public static final String BASE_URL = "http://192.168.1.11:3000/api/";
     
     private static Retrofit retrofit = null;
     private static AuthService authService = null;

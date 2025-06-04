@@ -15,7 +15,7 @@ public interface MarvelApiService {
     );
 
     @GET("comics")
-    Call<MarvelResponse> getComics(
+    Call<MarvelComicResponse> getComics(
         @Query("apikey") String apiKey,
         @Query("ts") String timestamp,
         @Query("hash") String hash,

@@ -42,6 +42,7 @@ public class MarvelApiClient {
     public static String generateHash(String timestamp) {
         try {
             String input = timestamp + ApiConfig.PRIVATE_KEY + ApiConfig.PUBLIC_KEY;
+            android.util.Log.d("API", "Input para hash: " + input);
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] messageDigest = md.digest(input.getBytes());
             
@@ -51,8 +52,11 @@ public class MarvelApiClient {
                 if (hex.length() == 1) hexString.append('0');
                 hexString.append(hex);
             }
-            return hexString.toString();
+            String hash = hexString.toString();
+            android.util.Log.d("API", "Hash generado: " + hash);
+            return hash;
         } catch (NoSuchAlgorithmException e) {
+            android.util.Log.e("API", "Error generando hash: " + e.getMessage());
             e.printStackTrace();
             return null;
         }

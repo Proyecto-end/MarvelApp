@@ -45,6 +45,13 @@ public class SolicitarFragment extends Fragment {
     private ArrayAdapter<String> adapter;
     private SharedPreferences sharedPreferences;
     private String currentUser;
+    private TextView tvComicPrecio;
+    private TextView tvComicPaginas;
+    private TextView tvComicFecha;
+    private TextView tvComicSerie;
+    private TextView tvComicEdicion;
+    private TextView tvComicCreadores;
+    private TextView tvComicPersonajes;
 
     @Nullable
     @Override
@@ -91,7 +98,13 @@ public class SolicitarFragment extends Fragment {
         tvComicDescripcion = view.findViewById(R.id.tvComicDescripcion);
         cardPreview = view.findViewById(R.id.cardPreview);
         loadingAnimation = view.findViewById(R.id.loadingAnimation);
-        
+        tvComicPrecio = view.findViewById(R.id.tvComicPrecio);
+        tvComicPaginas = view.findViewById(R.id.tvComicPaginas);
+        tvComicFecha = view.findViewById(R.id.tvComicFecha);
+        tvComicSerie = view.findViewById(R.id.tvComicSerie);
+        tvComicEdicion = view.findViewById(R.id.tvComicEdicion);
+        tvComicCreadores = view.findViewById(R.id.tvComicCreadores);
+        tvComicPersonajes = view.findViewById(R.id.tvComicPersonajes);
         solicitarButton.setOnClickListener(v -> solicitarComic());
     }
 
@@ -114,16 +127,13 @@ public class SolicitarFragment extends Fragment {
 
     private void showComicPreview(MarvelResponse.Comic comic) {
         if (comic == null) return;
-        
         cardPreview.setVisibility(View.VISIBLE);
         tvComicTitulo.setText(comic.getTitle());
-        
         if (comic.getDescription() != null && !comic.getDescription().isEmpty()) {
             tvComicDescripcion.setText(comic.getDescription());
         } else {
             tvComicDescripcion.setText("No hay descripción disponible");
         }
-
         if (comic.getThumbnail() != null) {
             String imageUrl = comic.getThumbnail().getFullPath();
             Picasso.get()
@@ -132,6 +142,50 @@ public class SolicitarFragment extends Fragment {
                 .error(R.drawable.error_hero)
                 .into(ivComicPreview);
         }
+        // Precio
+        String precio = "Precio: N/D";
+        if (comic.getPrices() != null && !comic.getPrices().isEmpty()) {
+            float p = comic.getPrices().get(0).getPrice();
+            if (p > 0) precio = String.format("Precio: $%.2f", p);
+        }
+        tvComicPrecio.setText(precio);
+        // Páginas
+        tvComicPaginas.setText("Páginas: " + (comic.getPageCount() > 0 ? comic.getPageCount() : "N/D"));
+        // Fecha de publicación
+        String fecha = "Publicado: N/D";
+        if (comic.getDates() != null) {
+            for (MarvelResponse.ComicDate d : comic.getDates()) {
+                if ("onsaleDate".equals(d.getType()) && d.getDate() != null && !d.getDate().isEmpty()) {
+                    fecha = "Publicado: " + d.getDate().substring(0, 10);
+                    break;
+                }
+            }
+        }
+        tvComicFecha.setText(fecha);
+        // Serie
+        tvComicSerie.setText("Serie: " + (comic.getSeries() != null && comic.getSeries().getName() != null ? comic.getSeries().getName() : "N/D"));
+        // Edición
+        tvComicEdicion.setText("Edición: #" + comic.getId());
+        // Creadores
+        String creadores = "Creadores: N/D";
+        if (comic.getCreators() != null && comic.getCreators().getItems() != null && !comic.getCreators().getItems().isEmpty()) {
+            List<String> nombres = new ArrayList<>();
+            for (MarvelResponse.CreatorSummary c : comic.getCreators().getItems()) {
+                nombres.add(c.getName());
+            }
+            creadores = "Creadores: " + String.join(", ", nombres);
+        }
+        tvComicCreadores.setText(creadores);
+        // Personajes
+        String personajes = "Personajes: N/D";
+        if (comic.getCharacters() != null && comic.getCharacters().getItems() != null && !comic.getCharacters().getItems().isEmpty()) {
+            List<String> nombres = new ArrayList<>();
+            for (MarvelResponse.CharacterSummary ch : comic.getCharacters().getItems()) {
+                nombres.add(ch.getName());
+            }
+            personajes = "Personajes: " + String.join(", ", nombres);
+        }
+        tvComicPersonajes.setText(personajes);
     }
 
     private void setLoadingVisibility(boolean visible) {
@@ -142,35 +196,25 @@ public class SolicitarFragment extends Fragment {
 
     private void loadComics() {
         setLoadingVisibility(true);
-        
         String timestamp = String.valueOf(System.currentTimeMillis());
         String hash = MarvelApiClient.generateHash(timestamp);
 
         MarvelApiClient.getInstance()
             .getApiService()
             .getComics(ApiConfig.PUBLIC_KEY, timestamp, hash, 100, 0)
-            .enqueue(new Callback<MarvelResponse>() {
+            .enqueue(new retrofit2.Callback<com.example.quiz2.api.MarvelComicResponse>() {
                 @Override
-                public void onResponse(@NonNull Call<MarvelResponse> call, @NonNull Response<MarvelResponse> response) {
+                public void onResponse(@NonNull Call<com.example.quiz2.api.MarvelComicResponse> call, @NonNull Response<com.example.quiz2.api.MarvelComicResponse> response) {
                     setLoadingVisibility(false);
-                    
                     if (response.isSuccessful() && response.body() != null) {
-                        MarvelResponse.Data data = response.body().getData();
+                        com.example.quiz2.api.MarvelComicResponse.Data data = response.body().getData();
                         if (data != null && data.getResults() != null) {
                             comicsList.clear();
                             List<String> comicTitles = new ArrayList<>();
-                            
-                            for (MarvelResponse.Character character : data.getResults()) {
-                                if (character.getComics() != null && character.getComics().getItems() != null) {
-                                    for (MarvelResponse.ComicSummary comicSummary : character.getComics().getItems()) {
-                                        MarvelResponse.Comic comic = new MarvelResponse.Comic();
-                                        comic.setTitle(comicSummary.getName());
-                                        comicsList.add(comic);
-                                        comicTitles.add(comicSummary.getName());
-                                    }
-                                }
+                            for (com.example.quiz2.api.MarvelResponse.Comic comic : data.getResults()) {
+                                comicsList.add(comic);
+                                comicTitles.add(comic.getTitle());
                             }
-                            
                             if (getContext() != null) {
                                 adapter.clear();
                                 adapter.addAll(comicTitles);
@@ -185,7 +229,7 @@ public class SolicitarFragment extends Fragment {
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<MarvelResponse> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<com.example.quiz2.api.MarvelComicResponse> call, @NonNull Throwable t) {
                     setLoadingVisibility(false);
                     if (getContext() != null) {
                         Toast.makeText(getContext(), "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
@@ -237,5 +281,12 @@ public class SolicitarFragment extends Fragment {
         if (getContext() != null) {
             Toast.makeText(getContext(), mensaje.toString(), Toast.LENGTH_LONG).show();
         }
+        // Limpiar campos después de solicitar
+        comicSpinner.setText("");
+        etCantidad.setText("");
+        etMotivo.setText("");
+        rgPrioridad.clearCheck();
+        cardPreview.setVisibility(View.GONE);
+        selectedComic = null;
     }
 } 

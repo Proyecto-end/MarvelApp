@@ -4,101 +4,106 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/marvel_black"
+    android:background="@drawable/login_background_gradient"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:padding="16dp">
 
-        <!-- Header Profile -->
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardProfile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#B22222"
             app:cardCornerRadius="24dp"
             app:cardElevation="16dp"
-            app:strokeColor="@color/marvel_red"
+            app:strokeColor="@color/black"
             app:strokeWidth="2dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@color/marvel_red">
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="32dp"
+                android:padding="24dp"
                 android:gravity="center">
 
-                <!-- Avatar -->
+                <!-- Avatar mejorado -->
                 <com.google.android.material.card.MaterialCardView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    app:cardCornerRadius="50dp"
-                    app:cardElevation="8dp"
-                    app:strokeColor="@color/marvel_blue"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    app:cardCornerRadius="60dp"
+                    app:cardElevation="12dp"
+                    app:strokeColor="@color/black"
                     app:strokeWidth="3dp">
 
                     <ImageView
-                        android:id="@+id/ivAvatar"
+                        android:id="@+id/ivAvatarUsuario"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
                         android:src="@drawable/ic_person"
-                        android:background="@color/marvel_black"
-                        android:clickable="true"
-                        android:focusable="true" />
+                        android:background="@color/black"
+                        android:padding="0dp"
+                        android:adjustViewBounds="true"/>
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Usuario -->
+                <!-- Usuario con estilo Marvel -->
                 <TextView
                     android:id="@+id/tvNombreUsuario"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Usuario Marvel"
+                    android:layout_marginTop="20dp"
+                    android:text="USUARIO MARVEL"
                     android:textColor="@color/marvel_white"
-                    android:textSize="24sp"
+                    android:textSize="28sp"
                     android:textStyle="bold"
-                    android:fontFamily="sans-serif-black" />
+                    android:letterSpacing="0.1"
+                    android:fontFamily="sans-serif-black"/>
 
                 <TextView
                     android:id="@+id/tvCorreoUsuario"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="8dp"
                     android:text="usuario@marvel.com"
                     android:textColor="@color/marvel_medium_text"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"/>
 
-                <!-- Badges -->
+                <!-- Badges con estilo Marvel -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="20dp"
                     android:orientation="horizontal"
                     android:gravity="center">
 
                     <com.google.android.material.chip.Chip
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hero"
+                        android:text="HÉROE"
+                        android:textStyle="bold"
                         android:textColor="@color/marvel_white"
                         app:chipBackgroundColor="@color/marvel_red"
-                        android:layout_marginEnd="8dp" />
+                        android:letterSpacing="0.1"
+                        app:chipStrokeWidth="0dp"
+                        android:layout_marginEnd="12dp"/>
 
                     <com.google.android.material.chip.Chip
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Verified"
+                        android:text="VERIFICADO"
+                        android:textStyle="bold"
                         android:textColor="@color/marvel_white"
-                        app:chipBackgroundColor="@color/marvel_blue" />
+                        app:chipBackgroundColor="@color/marvel_blue"
+                        android:letterSpacing="0.1"
+                        app:chipStrokeWidth="0dp"/>
 
                 </LinearLayout>
 
@@ -106,20 +111,20 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Información Personal -->
+        <!-- Información Personal con estilo Marvel -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardInfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="10dp"
-            app:strokeColor="@color/marvel_red"
-            app:strokeWidth="1dp"
+            app:cardBackgroundColor="#B22222"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="12dp"
+            app:strokeColor="@color/marvel_black"
+            app:strokeWidth="2dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardProfile"
-            android:background="@color/marvel_red">
+            app:layout_constraintTop_toBottomOf="@id/cardProfile">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -131,40 +136,48 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="INFORMACIÓN PERSONAL"
-                    android:textColor="@color/marvel_white"
-                    android:textSize="18sp"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="20dp"
-                    android:letterSpacing="0.1" />
+                    android:layout_marginBottom="24dp"
+                    android:letterSpacing="0.1"/>
 
-                <!-- Botón Editar Perfil -->
+                <!-- Botón Editar Perfil mejorado -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnEditarPerfil"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
                     android:text="EDITAR PERFIL"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
                     android:layout_gravity="end"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="20dp"
                     app:icon="@drawable/ic_edit"
                     app:iconGravity="textStart"
+                    app:iconPadding="12dp"
                     app:iconTint="@color/marvel_white"
-                    app:backgroundTint="@color/marvel_blue" />
+                    app:cornerRadius="28dp"
+                    app:backgroundTint="@color/marvel_blue"/>
 
-                <!-- Nombre completo -->
+                <!-- Campos de información mejorados -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:background="@android:color/transparent"
+                    app:boxStrokeColor="@color/white"
+                    android:padding="16dp"
                     android:layout_marginBottom="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_person"
-                        android:tint="@color/marvel_gold"
-                        android:layout_marginEnd="16dp" />
+                        app:tint="@color/marvel_gold"
+                        android:padding="4dp"
+                        android:layout_marginEnd="16dp"/>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -177,46 +190,46 @@
                             android:layout_height="wrap_content"
                             android:text="Nombre completo"
                             android:textColor="@color/marvel_medium_text"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
 
                         <TextView
                             android:id="@+id/tvValorNombre"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text="Peter Parker"
                             android:textColor="@color/marvel_white"
-                            android:textSize="16sp"
-                            android:layout_marginTop="2dp" />
+                            android:textSize="18sp"/>
+
                     </LinearLayout>
 
                     <ImageView
-                        android:id="@+id/ivEditNombre"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:src="@drawable/ic_edit"
-                        android:tint="@color/marvel_medium_text"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
-                        android:padding="2dp" />
+                        app:tint="@color/white"
+                        android:layout_marginStart="8dp"/>
 
                 </LinearLayout>
 
-                <!-- Correo electrónico -->
+                <!-- Email con estilo mejorado -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:background="@android:color/transparent"
+                    app:boxStrokeColor="@color/white"
+                    android:padding="16dp"
                     android:layout_marginBottom="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_email"
-                        android:tint="@color/marvel_gold"
-                        android:layout_marginEnd="16dp" />
+                        app:tint="@color/marvel_gold"
+                        android:padding="4dp"
+                        android:layout_marginEnd="16dp"/>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -229,46 +242,47 @@
                             android:layout_height="wrap_content"
                             android:text="Correo electrónico"
                             android:textColor="@color/marvel_medium_text"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
 
                         <TextView
                             android:id="@+id/tvValorCorreo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text="peter.parker@marvel.com"
                             android:textColor="@color/marvel_white"
-                            android:textSize="16sp"
-                            android:layout_marginTop="2dp" />
+                            android:textSize="18sp"/>
+
                     </LinearLayout>
 
                     <ImageView
                         android:id="@+id/ivEditCorreo"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:src="@drawable/ic_edit"
-                        android:tint="@color/marvel_medium_text"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
-                        android:padding="2dp" />
+                        app:tint="@color/white"
+                        android:layout_marginStart="8dp"/>
 
                 </LinearLayout>
 
-                <!-- Fecha de nacimiento -->
+                <!-- Fecha Nacimiento con estilo mejorado -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:background="@android:color/transparent"
+                    app:boxStrokeColor="@color/white"
+                    android:padding="16dp"
                     android:layout_marginBottom="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_calendar"
-                        android:tint="@color/marvel_gold"
-                        android:layout_marginEnd="16dp" />
+                        app:tint="@color/marvel_gold"
+                        android:padding="4dp"
+                        android:layout_marginEnd="16dp"/>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -281,115 +295,30 @@
                             android:layout_height="wrap_content"
                             android:text="Fecha de nacimiento"
                             android:textColor="@color/marvel_medium_text"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
 
                         <TextView
                             android:id="@+id/tvValorFechaNacimiento"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text="01/08/1962"
                             android:textColor="@color/marvel_white"
-                            android:textSize="16sp"
-                            android:layout_marginTop="2dp" />
+                            android:textSize="18sp"/>
+
                     </LinearLayout>
 
                     <ImageView
                         android:id="@+id/ivEditFecha"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:src="@drawable/ic_edit"
-                        android:tint="@color/marvel_medium_text"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
-                        android:padding="2dp" />
+                        app:tint="@color/white"
+                        android:layout_marginStart="8dp"/>
 
                 </LinearLayout>
 
-                <!-- Fecha de Registro -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="16dp">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_calendar"
-                        android:tint="@color/marvel_blue"
-                        android:layout_marginEnd="16dp" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Fecha de registro"
-                            android:textColor="@color/marvel_medium_text"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvFechaRegistro"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="01/01/2024"
-                            android:textColor="@color/marvel_white"
-                            android:textSize="16sp" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <!-- Último Acceso -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="16dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_clock"
-                        android:tint="@color/marvel_blue"
-                        android:layout_marginEnd="16dp" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Último acceso"
-                            android:textColor="@color/marvel_medium_text"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvUltimoAcceso"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="01/01/2024 12:00"
-                            android:textColor="@color/marvel_white"
-                            android:textSize="16sp" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <!-- Botones de Edición -->
                 <LinearLayout
                     android:id="@+id/layoutBotonesEdicion"
                     android:layout_width="match_parent"
@@ -402,22 +331,28 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCancelarEdicion"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="56dp"
                         android:text="CANCELAR"
-                        android:textSize="14sp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
                         android:layout_marginEnd="8dp"
-                        app:backgroundTint="@color/marvel_medium_gray"
-                        app:strokeColor="@color/marvel_light_gray"
-                        app:strokeWidth="1dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                        app:cornerRadius="28dp"
+                        app:backgroundTint="@color/marvel_dark_gray"
+                        app:strokeColor="@color/marvel_red"
+                        app:strokeWidth="2dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnGuardarCambios"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="56dp"
                         android:text="GUARDAR"
-                        android:textSize="14sp"
-                        app:backgroundTint="@color/marvel_blue" />
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
+                        app:cornerRadius="28dp"
+                        app:backgroundTint="@color/marvel_blue"/>
 
                 </LinearLayout>
 
@@ -425,20 +360,20 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Estadísticas -->
+        <!-- Estadísticas con estilo Marvel -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardStats"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="6dp"
-            app:strokeColor="@color/marvel_gold"
-            app:strokeWidth="1dp"
+            app:cardBackgroundColor="#B22222"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="12dp"
+            app:strokeColor="@color/black"
+            app:strokeWidth="2dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardInfo"
-            android:background="@drawable/bg_card_gradient">
+            app:layout_constraintTop_toBottomOf="@id/cardInfo">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -450,11 +385,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="ESTADÍSTICAS"
-                    android:textColor="@color/marvel_white"
-                    android:textSize="18sp"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="20dp"
-                    android:letterSpacing="0.1" />
+                    android:layout_marginBottom="24dp"
+                    android:letterSpacing="0.1"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -474,17 +409,19 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="25"
-                            android:textColor="@color/marvel_red"
-                            android:textSize="24sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/marvel_white"
+                            android:textSize="32sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-black"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Comics Favoritos"
                             android:textColor="@color/marvel_medium_text"
-                            android:textSize="12sp"
-                            android:gravity="center" />
+                            android:textSize="14sp"
+                            android:gravity="center"
+                            android:layout_marginTop="8dp"/>
 
                     </LinearLayout>
 
@@ -501,17 +438,19 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="12"
-                            android:textColor="@color/marvel_blue"
-                            android:textSize="24sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/marvel_white"
+                            android:textSize="32sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-black"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Héroes Seguidos"
                             android:textColor="@color/marvel_medium_text"
-                            android:textSize="12sp"
-                            android:gravity="center" />
+                            android:textSize="14sp"
+                            android:gravity="center"
+                            android:layout_marginTop="8dp"/>
 
                     </LinearLayout>
 
@@ -528,40 +467,91 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="8"
-                            android:textColor="@color/marvel_purple"
-                            android:textSize="24sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/marvel_white"
+                            android:textSize="32sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-black"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Solicitudes"
                             android:textColor="@color/marvel_medium_text"
-                            android:textSize="12sp"
-                            android:gravity="center" />
+                            android:textSize="14sp"
+                            android:gravity="center"
+                            android:layout_marginTop="8dp"/>
 
                     </LinearLayout>
 
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <!-- Contenido existente -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <!-- Aquí va todo el contenido anterior -->
+                    </LinearLayout>
+
+                    <!-- Fechas en la parte inferior -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:background="@android:color/transparent"
+                        android:padding="16dp"
+                        android:layout_marginTop="40dp"
+                        app:boxStrokeColor="@color/white">
+
+                        <TextView
+                            android:id="@+id/tvFechaRegistro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Fecha de registro: 01/01/2024"
+                            android:textColor="@color/marvel_white"
+                            android:textSize="16sp" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:id="@+id/tvUltimoAcceso"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Último acceso: 01/01/2024 12:00"
+                            android:textColor="@color/marvel_white"
+                            android:textSize="16sp" />
+
+                    </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Configuraciones -->
+        <!-- Configuraciones con estilo Marvel -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardSettings"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="6dp"
-            app:strokeColor="@color/marvel_gold"
-            app:strokeWidth="1dp"
+            app:cardBackgroundColor="#B22222"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="12dp"
+            app:strokeColor="@color/black"
+            app:strokeWidth="2dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardStats"
-            android:background="@drawable/bg_card_gradient">
+            app:layout_constraintTop_toBottomOf="@id/cardStats">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -573,11 +563,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="CONFIGURACIONES"
-                    android:textColor="@color/marvel_white"
-                    android:textSize="18sp"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="20dp"
-                    android:letterSpacing="0.1" />
+                    android:layout_marginBottom="24dp"
+                    android:letterSpacing="0.15"
+                    android:fontFamily="sans-serif-black"/>
 
                 <!-- Notificaciones -->
                 <LinearLayout
@@ -585,30 +576,35 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:background="@color/black"
+                    android:padding="16dp"
                     android:layout_marginBottom="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_notifications"
-                        android:tint="@color/marvel_cyan"
-                        android:layout_marginEnd="16dp" />
+                        app:tint="@color/marvel_gold"
+                        android:padding="4dp"
+                        android:layout_marginEnd="16dp"/>
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Notificaciones"
+                        android:text="NOTIFICACIONES"
                         android:textColor="@color/marvel_white"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:letterSpacing="0.1"
+                        android:textStyle="bold"/>
 
                     <Switch
                         android:id="@+id/switchNotificaciones"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:thumbTint="@color/marvel_cyan"
-                        android:trackTint="@color/marvel_light_gray" />
+                        android:thumbTint="@color/marvel_gold"
+                        android:trackTint="@color/marvel_dark_gray"/>
 
                 </LinearLayout>
 
@@ -618,30 +614,35 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:background="@color/black"
+                    android:padding="16dp"
                     android:layout_marginBottom="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_dark_mode"
-                        android:tint="@color/marvel_purple"
-                        android:layout_marginEnd="16dp" />
+                        app:tint="@color/marvel_gold"
+                        android:padding="4dp"
+                        android:layout_marginEnd="16dp"/>
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Tema Oscuro"
+                        android:text="TEMA OSCURO"
                         android:textColor="@color/marvel_white"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:letterSpacing="0.1"
+                        android:textStyle="bold"/>
 
                     <Switch
                         android:id="@+id/switchTemaOscuro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:thumbTint="@color/marvel_purple"
-                        android:trackTint="@color/marvel_light_gray" />
+                        android:thumbTint="@color/marvel_gold"
+                        android:trackTint="@color/marvel_dark_gray"/>
 
                 </LinearLayout>
 
@@ -651,22 +652,27 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:background="@color/black"
+                    android:padding="16dp"
                     android:layout_marginBottom="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_volume_up"
-                        android:tint="@color/marvel_gold"
-                        android:layout_marginEnd="16dp" />
+                        app:tint="@color/marvel_gold"
+                        android:padding="4dp"
+                        android:layout_marginEnd="16dp"/>
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Sonidos"
+                        android:text="SONIDOS"
                         android:textColor="@color/marvel_white"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:letterSpacing="0.1"
+                        android:textStyle="bold"/>
 
                     <Switch
                         android:id="@+id/switchSonidos"
@@ -674,7 +680,7 @@
                         android:layout_height="wrap_content"
                         android:checked="true"
                         android:thumbTint="@color/marvel_gold"
-                        android:trackTint="@color/marvel_light_gray" />
+                        android:trackTint="@color/marvel_dark_gray"/>
 
                 </LinearLayout>
 
@@ -682,19 +688,24 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Botón Cerrar Sesión -->
+        <!-- Botón Cerrar Sesión mejorado -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCerrarSesion"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_width="517dp"
+            android:layout_height="63dp"
             android:layout_marginTop="32dp"
+            android:letterSpacing="0.15"
+            android:stateListAnimator="@null"
             android:text="CERRAR SESIÓN"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
-            app:backgroundTint="@color/marvel_error"
-            app:cornerRadius="12dp"
+            app:backgroundTint="@android:color/holo_red_dark"
+            app:cornerRadius="32dp"
+            app:elevation="12dp"
             app:icon="@drawable/ic_logout"
             app:iconGravity="textStart"
+            app:iconPadding="16dp"
+            app:iconSize="24dp"
             app:iconTint="@color/marvel_white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -705,14 +716,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Marvel Studios © 2024"
-            android:textColor="@color/marvel_medium_text"
-            android:textSize="12sp"
+            android:text="MARVEL STUDIOS © 2024"
+            android:textColor="@color/marvel_gold"
+            android:textSize="14sp"
+            android:letterSpacing="0.15"
+            android:textStyle="bold"
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnCerrarSesion" />
+            app:layout_constraintTop_toBottomOf="@id/btnCerrarSesion"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</ScrollView> 
+</ScrollView>

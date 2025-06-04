@@ -154,6 +154,21 @@ public class MarvelResponse {
         @SerializedName("prices")
         private List<ComicPrice> prices;
 
+        @SerializedName("pageCount")
+        private int pageCount;
+
+        @SerializedName("dates")
+        private List<ComicDate> dates;
+
+        @SerializedName("series")
+        private SeriesSummary series;
+
+        @SerializedName("creators")
+        private CreatorList creators;
+
+        @SerializedName("characters")
+        private CharacterList characters;
+
         public int getId() {
             return id;
         }
@@ -193,6 +208,26 @@ public class MarvelResponse {
         public void setPrices(List<ComicPrice> prices) {
             this.prices = prices;
         }
+
+        public int getPageCount() {
+            return pageCount;
+        }
+
+        public List<ComicDate> getDates() {
+            return dates;
+        }
+
+        public SeriesSummary getSeries() {
+            return series;
+        }
+
+        public CreatorList getCreators() {
+            return creators;
+        }
+
+        public CharacterList getCharacters() {
+            return characters;
+        }
     }
 
     public static class ComicPrice {
@@ -208,6 +243,74 @@ public class MarvelResponse {
 
         public float getPrice() {
             return price;
+        }
+    }
+
+    public static class ComicDate {
+        @SerializedName("type")
+        private String type;
+
+        @SerializedName("date")
+        private String date;
+
+        public String getType() {
+            return type;
+        }
+
+        public String getDate() {
+            return date;
+        }
+    }
+
+    public static class SeriesSummary {
+        @SerializedName("name")
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    public static class CreatorList {
+        @SerializedName("items")
+        private List<CreatorSummary> items;
+
+        public List<CreatorSummary> getItems() {
+            return items;
+        }
+    }
+
+    public static class CreatorSummary {
+        @SerializedName("name")
+        private String name;
+
+        @SerializedName("role")
+        private String role;
+
+        public String getName() {
+            return name;
+        }
+
+        public String getRole() {
+            return role;
+        }
+    }
+
+    public static class CharacterList {
+        @SerializedName("items")
+        private List<CharacterSummary> items;
+
+        public List<CharacterSummary> getItems() {
+            return items;
+        }
+    }
+
+    public static class CharacterSummary {
+        @SerializedName("name")
+        private String name;
+
+        public String getName() {
+            return name;
         }
     }
 

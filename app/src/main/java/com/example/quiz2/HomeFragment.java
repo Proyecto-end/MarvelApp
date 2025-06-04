@@ -51,6 +51,7 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
     
     // Chips para filtros
     private Chip chipTodos, chipAvengers, chipXMen, chipFantasticFour;
+    private Chip chipUniverso, chipEstado, chipPopular, chipComics;
 
     @Nullable
     @Override
@@ -115,6 +116,10 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
         chipAvengers = view.findViewById(R.id.chipAvengers);
         chipXMen = view.findViewById(R.id.chipXMen);
         chipFantasticFour = view.findViewById(R.id.chipFantasticFour);
+        chipUniverso = view.findViewById(R.id.chipUniverso);
+        chipEstado = view.findViewById(R.id.chipEstado);
+        chipPopular = view.findViewById(R.id.chipPopular);
+        chipComics = view.findViewById(R.id.chipComics);
     }
 
     private void setupUserInfo() {
@@ -159,35 +164,32 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
 
     private void setupFilterChips() {
         // Verificar que todos los chips existan antes de configurar listeners
-        if (chipTodos == null || chipAvengers == null || chipXMen == null || chipFantasticFour == null) {
-            // Si algún chip no existe, no configurar filtros avanzados
+        if (chipTodos == null || chipAvengers == null || chipXMen == null || chipFantasticFour == null || chipUniverso == null || chipEstado == null || chipPopular == null || chipComics == null) {
             return;
         }
-        
-        // Configurar listener para cada chip
         View.OnClickListener chipClickListener = v -> {
             Chip selectedChip = (Chip) v;
             String filtro = selectedChip.getText().toString();
-            
-            // Desmarcar todos los chips
             chipTodos.setChecked(false);
             chipAvengers.setChecked(false);
             chipXMen.setChecked(false);
             chipFantasticFour.setChecked(false);
-            
-            // Marcar el chip seleccionado
+            chipUniverso.setChecked(false);
+            chipEstado.setChecked(false);
+            chipPopular.setChecked(false);
+            chipComics.setChecked(false);
             selectedChip.setChecked(true);
-            
-            // Actualizar filtro y lista
             filtroActual = filtro;
             filterSuperheroes(etBusqueda.getText().toString(), filtroActual);
         };
-
-        // Asignar listeners
         chipTodos.setOnClickListener(chipClickListener);
         chipAvengers.setOnClickListener(chipClickListener);
         chipXMen.setOnClickListener(chipClickListener);
         chipFantasticFour.setOnClickListener(chipClickListener);
+        chipUniverso.setOnClickListener(chipClickListener);
+        chipEstado.setOnClickListener(chipClickListener);
+        chipPopular.setOnClickListener(chipClickListener);
+        chipComics.setOnClickListener(chipClickListener);
     }
 
     private void setupSwipeRefresh() {
@@ -213,10 +215,14 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
         
         String timestamp = String.valueOf(System.currentTimeMillis());
         String hash = MarvelApiClient.generateHash(timestamp);
+        
+        android.util.Log.d("API", "Timestamp: " + timestamp);
+        android.util.Log.d("API", "Hash: " + hash);
+        android.util.Log.d("API", "Public Key: " + ApiConfig.PUBLIC_KEY);
 
         MarvelApiClient.getInstance()
             .getApiService()
-            .getCharacters(ApiConfig.PUBLIC_KEY, timestamp, hash, 20, 0)
+            .getCharacters(ApiConfig.PUBLIC_KEY, timestamp, hash, 100, 0)
             .enqueue(new Callback<MarvelResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<MarvelResponse> call, @NonNull Response<MarvelResponse> response) {
@@ -227,22 +233,29 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
                         swipeRefreshLayout.setRefreshing(false);
                     }
                     
+                    android.util.Log.d("API", "Código de respuesta: " + response.code());
+                    android.util.Log.d("API", "URL de la llamada: " + call.request().url());
+                    
                     if (response.isSuccessful() && response.body() != null) {
                         MarvelResponse.Data data = response.body().getData();
-                        if (data != null && data.getResults() != null && !data.getResults().isEmpty()) {
-                            android.util.Log.d("API", "Héroes recibidos: " + data.getResults().size());
-                            if (getContext() != null) {
-                                android.widget.Toast.makeText(getContext(), 
-                                    "Héroes recibidos: " + data.getResults().size(), 
-                                    android.widget.Toast.LENGTH_SHORT).show();
-                            }
-                            superheroesCompletos = convertToSuperheroes(data.getResults());
-                            if (adapter != null) {
-                                adapter.updateList(superheroesCompletos);
-                                updateEstadoLista();
+                        android.util.Log.d("API", "Data recibida: " + (data != null ? "Sí" : "No"));
+                        if (data != null && data.getResults() != null) {
+                            android.util.Log.d("API", "Resultados recibidos: " + (data.getResults().isEmpty() ? "Lista vacía" : data.getResults().size() + " héroes"));
+                            if (!data.getResults().isEmpty()) {
+                                for (MarvelResponse.Character hero : data.getResults()) {
+                                    android.util.Log.d("API", "Nombre del héroe: " + hero.getName());
+                                }
+                                superheroesCompletos = convertToSuperheroes(data.getResults());
+                                if (adapter != null) {
+                                    adapter.updateList(superheroesCompletos);
+                                    updateEstadoLista();
+                                }
+                            } else {
+                                showError("No se encontraron superhéroes");
                             }
                         } else {
-                            showError("No se encontraron superhéroes");
+                            android.util.Log.e("API", "Data o Results es null");
+                            showError("Error en la respuesta de la API");
                         }
                     } else {
                         String errorMessage = "Error al cargar los superhéroes";
@@ -251,26 +264,20 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
                         } else if (response.code() == 429) {
                             errorMessage = "Límite de solicitudes excedido";
                         }
+                        android.util.Log.e("API", "Error en la respuesta: " + errorMessage);
                         showError(errorMessage);
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<MarvelResponse> call, @NonNull Throwable t) {
-                    if (!isAdded()) return; // Verificar si el fragmento está adjunto
-                    
+                    if (!isAdded()) return;
                     showLoading(false);
                     if (swipeRefreshLayout != null) {
                         swipeRefreshLayout.setRefreshing(false);
                     }
-                    
-                    String errorMessage = "Error de conexión";
-                    if (t instanceof java.net.UnknownHostException) {
-                        errorMessage = "No hay conexión a internet";
-                    } else if (t instanceof java.net.SocketTimeoutException) {
-                        errorMessage = "Tiempo de espera agotado";
-                    }
-                    showError(errorMessage + ": " + t.getMessage());
+                    android.util.Log.e("API", "Error en la llamada: " + t.getMessage());
+                    showError("Error de conexión: " + t.getMessage());
                 }
             });
     }
@@ -290,55 +297,92 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
                 hero.setPrimeraAparicion(character.getModified().substring(0, 10));
             }
             
-            // Asignar grupos basado en el nombre y descripción
+            // Asignar grupos y popularidad basado en el nombre y descripción
             String nombre = character.getName().toLowerCase();
             String descripcion = character.getDescription().toLowerCase();
             
+            // Inicializar popularidad en 0
+            int popularidad = 0;
+            
+            // Spider-Man
             if (nombre.contains("spider") || nombre.contains("peter") || nombre.contains("parker")) {
                 hero.addGrupo("Spider-Man");
+                popularidad += 100;
             }
+            // Iron Man
             if (nombre.contains("iron") || nombre.contains("stark") || nombre.contains("tony")) {
                 hero.addGrupo("Avengers");
+                popularidad += 100;
             }
+            // Captain America
             if (nombre.contains("captain") || nombre.contains("america") || nombre.contains("steve") || nombre.contains("rogers")) {
                 hero.addGrupo("Avengers");
+                popularidad += 100;
             }
+            // Thor
             if (nombre.contains("thor") || nombre.contains("odinson")) {
                 hero.addGrupo("Avengers");
+                popularidad += 100;
             }
+            // Hulk
             if (nombre.contains("hulk") || nombre.contains("banner") || nombre.contains("bruce")) {
                 hero.addGrupo("Avengers");
+                popularidad += 100;
             }
+            // Black Widow
             if (nombre.contains("black") && nombre.contains("widow")) {
                 hero.addGrupo("Avengers");
+                popularidad += 80;
             }
+            // Hawkeye
             if (nombre.contains("hawk") || nombre.contains("eye")) {
                 hero.addGrupo("Avengers");
+                popularidad += 80;
             }
+            // Wolverine
             if (nombre.contains("wolverine") || nombre.contains("logan")) {
                 hero.addGrupo("X-Men");
+                popularidad += 90;
             }
+            // Cyclops
             if (nombre.contains("cyclops") || nombre.contains("scott")) {
                 hero.addGrupo("X-Men");
+                popularidad += 70;
             }
+            // Storm
             if (nombre.contains("storm") || nombre.contains("oro")) {
                 hero.addGrupo("X-Men");
+                popularidad += 70;
             }
+            // Jean Grey
             if (nombre.contains("jean") || nombre.contains("grey") || nombre.contains("phoenix")) {
                 hero.addGrupo("X-Men");
+                popularidad += 70;
             }
+            // Fantastic Four
             if (nombre.contains("mister") && nombre.contains("fantastic")) {
                 hero.addGrupo("4 Fantásticos");
+                popularidad += 80;
             }
             if (nombre.contains("invisible") && nombre.contains("woman")) {
                 hero.addGrupo("4 Fantásticos");
+                popularidad += 80;
             }
             if (nombre.contains("human") && nombre.contains("torch")) {
                 hero.addGrupo("4 Fantásticos");
+                popularidad += 80;
             }
             if (nombre.contains("thing") || nombre.contains("ben") || nombre.contains("grimm")) {
                 hero.addGrupo("4 Fantásticos");
+                popularidad += 80;
             }
+            
+            // Añadir popularidad basada en la cantidad de comics
+            if (character.getComics() != null && character.getComics().getItems() != null) {
+                popularidad += character.getComics().getItems().size() * 2;
+            }
+            
+            hero.setPopularidad(popularidad);
             
             if (character.getThumbnail() != null) {
                 hero.setImagenUrl(character.getThumbnail().getFullPath());
@@ -353,6 +397,7 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
                 }
                 hero.setComics(comicTitles);
             }
+            
             // Obtener series del personaje
             if (character.getSeries() != null && character.getSeries().getItems() != null) {
                 List<String> seriesTitles = new ArrayList<>();
@@ -362,6 +407,7 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
                 }
                 hero.setSeries(seriesTitles);
             }
+            
             // Obtener historias del personaje
             if (character.getStories() != null && character.getStories().getItems() != null) {
                 List<String> storyTitles = new ArrayList<>();
@@ -371,6 +417,7 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
                 }
                 hero.setStories(storyTitles);
             }
+            
             // Obtener eventos del personaje
             if (character.getEvents() != null && character.getEvents().getItems() != null) {
                 List<String> eventTitles = new ArrayList<>();
@@ -381,11 +428,13 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
                 hero.setEvents(eventTitles);
             }
             
-            hero.setPopularidad(character.getPopularity());
             hero.setEstado(character.isActive() ? "Activo" : "Inactivo");
             
             heroes.add(hero);
         }
+        
+        // Ordenar héroes por popularidad (de mayor a menor)
+        heroes.sort((h1, h2) -> Integer.compare(h2.getPopularidad(), h1.getPopularidad()));
         
         return heroes;
     }
@@ -399,7 +448,38 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
     }
 
     private void filterSuperheroes(String query, String categoria) {
-        adapter.filter(query, categoria);
+        List<Superheroe> filtrados = new ArrayList<>();
+        for (Superheroe hero : superheroesCompletos) {
+            boolean coincide = hero.getNombre().toLowerCase().contains(query.toLowerCase());
+            if (!coincide) continue;
+            switch (categoria) {
+                case "Avengers":
+                    coincide = hero.getGrupos() != null && hero.getGrupos().contains("Avengers");
+                    break;
+                case "X-Men":
+                    coincide = hero.getGrupos() != null && hero.getGrupos().contains("X-Men");
+                    break;
+                case "4 Fantásticos":
+                    coincide = hero.getGrupos() != null && hero.getGrupos().contains("4 Fantásticos");
+                    break;
+                case "Universo 616":
+                    coincide = hero.getUniverso() != null && hero.getUniverso().toLowerCase().contains("616");
+                    break;
+                case "Activos":
+                    coincide = hero.getEstado() != null && hero.getEstado().equalsIgnoreCase("Activo");
+                    break;
+                case "Muy populares":
+                    coincide = hero.getPopularidad() >= 80;
+                    break;
+                case "> 100 cómics":
+                    coincide = hero.getComics() != null && hero.getComics().size() > 100;
+                    break;
+                default:
+                    coincide = true;
+            }
+            if (coincide) filtrados.add(hero);
+        }
+        adapter.updateList(filtrados);
         updateEstadoLista();
     }
 
@@ -479,6 +559,10 @@ public class HomeFragment extends Fragment implements SuperheroeAdapter.OnSuperh
         chipAvengers = null;
         chipXMen = null;
         chipFantasticFour = null;
+        chipUniverso = null;
+        chipEstado = null;
+        chipPopular = null;
+        chipComics = null;
         adapter = null;
     }
 } 

@@ -1,0 +1,265 @@
+Documentación Técnica - Proyecto Marvel App
+
+1. Descripción General
+- Marvel App es una aplicación Android nativa desarrollada en Java, que permite a los usuarios explorar superhéroes y cómics del universo Marvel, gestionar favoritos y realizar solicitudes de cómics.
+- Utiliza un servidor Node.js propio para autenticación de usuarios (login y registro).
+- Integra la API oficial de Marvel para obtener datos reales de personajes y cómics.
+
+2. Arquitectura del Proyecto
+2.1 Estructura de Directorios
+app/src/main/
+├── java/com/example/quiz2/
+│   ├── api/           # Servicios y configuración de APIs (Retrofit)
+│   ├── fragments/     # Fragments de la app (Home, Configuración, Solicitar, etc.)
+│   ├── models/        # Modelos de datos (Usuario, Superhéroe, Comic)
+│   ├── adapters/      # Adaptadores para RecyclerView
+│   └── ...            # Activities principales y utilidades
+├── res/
+│   ├── layout/        # Layouts XML de actividades y fragments
+│   ├── drawable/      # Imágenes, iconos y animaciones
+│   ├── values/        # Colores, strings, estilos
+│   ├── menu/          # Menús de la app
+│   └── anim/          # Animaciones
+└── AndroidManifest.xml
+
+2.2 Componentes Principales
+- Activities: LoginActivity.java, RegistroActivity.java, MainMarvelActivity.java, DetalleSuperheroActivity.java
+- Fragments: HomeFragment.java, ConfiguracionFragment.java, SolicitarFragment.java, PerfilFragment.java, NoticiasFragment.java, ajustesFragment.java
+- Servicios API: MarvelApiService.java, AuthService.java
+- Modelos de Datos: Superheroe.java, Usuario.java, Comic.java
+- Adaptadores: SuperheroeAdapter.java, otros adaptadores para listas y menús
+
+3. Implementación de Retrofit
+3.1 Dependencias (build.gradle)
+implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+
+3.2 Configuraciones
+Marvel API: ApiConfig.java
+public class ApiConfig {
+    public static final String BASE_URL = "https://gateway.marvel.com/v1/public/";
+    public static final String PUBLIC_KEY = "e7bcf8f2f77aa7f9544003e67bc6a38f";
+    public static final String PRIVATE_KEY = "82b9b70c068884e746fcbdc36f46c5ca4176c99c";
+}
+
+Autenticación: AuthConfig.java
+public class AuthConfig {
+    public static final String BASE_URL = "http://192.168.1.11:3000/api/";
+}
+
+4. Servicios API
+4.1 MarvelApiService
+public interface MarvelApiService {
+    @GET("characters")
+    Call<MarvelResponse> getCharacters(
+        @Query("apikey") String apiKey,
+        @Query("ts") String timestamp,
+        @Query("hash") String hash,
+        @Query("limit") int limit,
+        @Query("offset") int offset
+    );
+    @GET("comics")
+    Call<MarvelComicResponse> getComics(
+        @Query("apikey") String apiKey,
+        @Query("ts") String timestamp,
+        @Query("hash") String hash,
+        @Query("limit") int limit,
+        @Query("offset") int offset
+    );
+}
+
+4.2 AuthService
+public interface AuthService {
+    @POST("auth/login")
+    Call<AuthResponse> login(@Body LoginRequest request);
+    @POST("auth/register")
+    Call<AuthResponse> register(@Body RegisterRequest request);
+}
+
+5. Modelos de Datos
+5.1 LoginRequest
+public class LoginRequest {
+    @SerializedName("email")
+    private String email;
+    @SerializedName("password")
+    private String password;
+}
+
+5.2 RegisterRequest
+public class RegisterRequest {
+    @SerializedName("name")
+    private String name;
+    @SerializedName("email")
+    private String email;
+    @SerializedName("password")
+    private String password;
+    @SerializedName("birthDate")
+    private String birthDate;
+}
+
+5.3 AuthResponse
+public class AuthResponse {
+    @SerializedName("success")
+    private boolean success;
+    @SerializedName("message")
+    private String message;
+    @SerializedName("token")
+    private String token;
+    @SerializedName("user")
+    private UserData user;
+    // ... getters y clase interna UserData
+}
+
+6. Implementación de Clientes
+6.1 MarvelApiClient (Singleton)
+public class MarvelApiClient {
+    private static MarvelApiClient instance;
+    private final MarvelApiService apiService;
+    private MarvelApiClient() {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .build();
+        Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(ApiConfig.BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+        apiService = retrofit.create(MarvelApiService.class);
+    }
+    // ... métodos getInstance(), getApiService(), generateHash()
+}
+
+6.2 AuthConfig (Singleton para autenticación)
+public class AuthConfig {
+    private static Retrofit retrofit = null;
+    private static AuthService authService = null;
+    public static AuthService getAuthService() {
+        if (authService == null) {
+            authService = getRetrofitInstance().create(AuthService.class);
+        }
+        return authService;
+    }
+    // ... método getRetrofitInstance()
+}
+
+7. Ejemplos de Uso
+7.1 Login
+private void performLogin(String email, String password) {
+    LoginRequest request = new LoginRequest(email, password);
+    AuthConfig.getAuthService().login(request).enqueue(new Callback<AuthResponse>() {
+        @Override
+        public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+            // Manejo de respuesta
+        }
+        @Override
+        public void onFailure(Call<AuthResponse> call, Throwable t) {
+            // Manejo de errores
+        }
+    });
+}
+
+7.2 Carga de Superhéroes
+private void loadSuperheroes() {
+    String timestamp = String.valueOf(System.currentTimeMillis());
+    String hash = MarvelApiClient.generateHash(timestamp);
+    MarvelApiClient.getInstance()
+        .getApiService()
+        .getCharacters(ApiConfig.PUBLIC_KEY, timestamp, hash, 100, 0)
+        .enqueue(new Callback<MarvelResponse>() {
+            @Override
+            public void onResponse(Call<MarvelResponse> call, Response<MarvelResponse> response) {
+                // Manejo de respuesta
+            }
+            @Override
+            public void onFailure(Call<MarvelResponse> call, Throwable t) {
+                // Manejo de errores
+            }
+        });
+}
+
+8. Características de la Implementación
+1. Patrón Singleton para clientes de API.
+2. Interceptores de Logging para depuración de peticiones HTTP.
+3. Conversión JSON automática con GsonConverterFactory.
+4. Manejo de Errores robusto con callbacks de Retrofit.
+5. Timeouts configurados en OkHttpClient.
+6. CORS habilitado en el servidor Node.js.
+7. Autenticación con tokens (simulados en el backend).
+8. Validaciones de datos tanto en frontend como en backend.
+9. Persistencia de sesión con SharedPreferences en Android.
+10. Animaciones con Lottie y transiciones suaves en la UI.
+
+9. Flujos de Datos
+9.1 Autenticación
+- Login: Usuario → LoginActivity → AuthService.login() → Servidor Node.js → Respuesta (token, datos usuario) → SharedPreferences
+- Registro: Usuario → RegistroActivity → AuthService.register() → Servidor Node.js → Respuesta (usuario creado)
+
+9.2 Datos Marvel
+- Personajes: Usuario → HomeFragment → MarvelApiService.getCharacters() → API Marvel → Respuesta (lista de personajes)
+- Comics: Usuario → SolicitarFragment → MarvelApiService.getComics() → API Marvel → Respuesta (lista de cómics)
+
+10. Requisitos Técnicos
+- Android Studio Arctic Fox o superior
+- SDK Android 24+ (Android 7.0)
+- Gradle 7.0+
+- Java 8+
+- Node.js 14+ (para el servidor)
+- npm para dependencias del servidor
+
+11. Configuración del Entorno
+11.1 Android
+1. Clonar el repositorio
+2. Abrir en Android Studio
+3. Sincronizar Gradle
+4. Ejecutar la aplicación en emulador o dispositivo físico
+
+11.2 Servidor
+1. Ir a la carpeta server
+2. Instalar dependencias: npm install
+3. Configurar la IP local en AuthConfig.java
+4. Iniciar el servidor: npm start
+
+12. Seguridad y Validaciones
+- Servidor Node.js: Validación de campos requeridos, verificación de email único, manejo de errores HTTP, CORS habilitado
+- App Android: Validación de email y contraseña en login y registro, persistencia segura de sesión, manejo de errores de red y servidor
+
+13. Detalles de UI/UX
+- Colores Marvel: Rojo: #ED1D24, Azul: #1E90FF, Púrpura: #663399, Gris oscuro: #2C2C2C
+- Animaciones: Lottie para loading, transiciones entre fragments, micro-interacciones (Ripple, estados de botón)
+- Componentes Material Design: TextInputLayout, ChipGroup, RecyclerView, CardView, BottomNavigationView
+
+14. Estructura del Servidor Node.js
+- Nombre del servidor: marvel-auth-server
+- Archivo principal: server.js
+- Dependencias: express, cors, body-parser
+- Endpoints: POST /api/auth/register, POST /api/auth/login
+- Puerto: 3000
+- Almacenamiento: En memoria (array de usuarios)
+
+15. Ejemplo de Respuesta del Servidor
+Éxito:
+{
+  "success": true,
+  "message": "Usuario registrado exitosamente",
+  "user": {
+    "id": 1,
+    "name": "Peter Parker",
+    "email": "spiderman@marvel.com",
+    "birthDate": "2001-08-10"
+  }
+}
+Error:
+{
+  "success": false,
+  "message": "El email ya está registrado"
+}
+
+16. Buenas Prácticas
+- Seguir convenciones de código Java y Node.js
+- Mantener consistencia visual con Material Design
+- Usar la paleta de colores Marvel definida
+- Implementar animaciones suaves y feedback visual
+- Validar exhaustivamente todos los formularios 

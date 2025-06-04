@@ -1,8 +1,10 @@
 package com.example.quiz2;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.airbnb.lottie.LottieAnimationView;
 import java.io.File;
@@ -45,6 +49,7 @@ public class ConfiguracionFragment extends Fragment {
     private Calendar fechaNacimiento;
     private SimpleDateFormat dateFormat;
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int PERMISSION_REQUEST_CODE = 2;
     private Uri avatarUri;
 
     @Nullable
@@ -64,7 +69,7 @@ public class ConfiguracionFragment extends Fragment {
 
     private void initializeViews(View view) {
         // Avatar y nombre
-        ivAvatarUsuario = view.findViewById(R.id.ivAvatar);
+        ivAvatarUsuario = view.findViewById(R.id.ivAvatarUsuario);
         tvNombreUsuario = view.findViewById(R.id.tvNombreUsuario);
         tvCorreoUsuario = view.findViewById(R.id.tvCorreoUsuario);
         
@@ -145,9 +150,21 @@ public class ConfiguracionFragment extends Fragment {
             tvUltimoAcceso.setText(ultimoAcceso);
             // Cargar avatar si existe y es seguro
             String avatarUriString = sharedPreferences.getString("avatarUri", null);
-            if (avatarUriString != null && avatarUriString.startsWith("file://")) {
-                avatarUri = Uri.parse(avatarUriString);
-                ivAvatarUsuario.setImageURI(avatarUri);
+            if (avatarUriString != null) {
+                try {
+                    File avatarFile = new File(Uri.parse(avatarUriString).getPath());
+                    if (avatarFile.exists() && avatarFile.length() > 0) {
+                        avatarUri = Uri.fromFile(avatarFile);
+                        ivAvatarUsuario.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        ivAvatarUsuario.setImageURI(null); // Limpiar la imagen actual
+                        ivAvatarUsuario.setImageURI(avatarUri);
+                    } else {
+                        ivAvatarUsuario.setImageResource(R.drawable.ic_person);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ivAvatarUsuario.setImageResource(R.drawable.ic_person);
+                }
             } else {
                 ivAvatarUsuario.setImageResource(R.drawable.ic_person);
             }
@@ -258,9 +275,28 @@ public class ConfiguracionFragment extends Fragment {
     }
 
     private void openImagePicker() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_CODE);
+            return;
+        }
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openImagePicker();
+            } else {
+                Toast.makeText(getContext(), "Se necesita permiso para acceder a la galería", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -268,12 +304,25 @@ public class ConfiguracionFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == getActivity().RESULT_OK && data != null && data.getData() != null) {
             Uri selectedImageUri = data.getData();
-            // Copiar la imagen a almacenamiento interno
-            Uri internalUri = copyImageToInternalStorage(selectedImageUri);
-            if (internalUri != null) {
-                avatarUri = internalUri;
-                ivAvatarUsuario.setImageURI(avatarUri);
-                sharedPreferences.edit().putString("avatarUri", avatarUri.toString()).apply();
+            try {
+                // Verificar que podemos acceder a la imagen
+                getContext().getContentResolver().openInputStream(selectedImageUri);
+                // Copiar la imagen a almacenamiento interno
+                Uri internalUri = copyImageToInternalStorage(selectedImageUri);
+                if (internalUri != null) {
+                    avatarUri = internalUri;
+                    // Asegurarnos de que la imagen se muestre correctamente
+                    ivAvatarUsuario.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    ivAvatarUsuario.setImageURI(null); // Limpiar la imagen actual
+                    ivAvatarUsuario.setImageURI(avatarUri);
+                    sharedPreferences.edit().putString("avatarUri", avatarUri.toString()).apply();
+                    Toast.makeText(getContext(), "Imagen actualizada", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Error al guardar la imagen", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(), "Error al procesar la imagen: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -282,7 +331,12 @@ public class ConfiguracionFragment extends Fragment {
         try {
             InputStream inputStream = getContext().getContentResolver().openInputStream(sourceUri);
             if (inputStream == null) return null;
-            File avatarFile = new File(getContext().getFilesDir(), "avatar.jpg");
+            
+            // Crear un nombre único para el archivo
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new java.util.Date());
+            String imageFileName = "AVATAR_" + timeStamp + ".jpg";
+            File avatarFile = new File(getContext().getFilesDir(), imageFileName);
+            
             FileOutputStream outputStream = new FileOutputStream(avatarFile);
             byte[] buffer = new byte[4096];
             int bytesRead;
@@ -291,7 +345,12 @@ public class ConfiguracionFragment extends Fragment {
             }
             outputStream.close();
             inputStream.close();
-            return Uri.fromFile(avatarFile);
+            
+            // Verificar que el archivo se creó correctamente
+            if (avatarFile.exists() && avatarFile.length() > 0) {
+                return Uri.fromFile(avatarFile);
+            }
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
             return null;

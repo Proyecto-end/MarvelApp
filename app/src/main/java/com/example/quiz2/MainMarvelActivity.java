@@ -21,6 +21,7 @@ import com.example.quiz2.models.Superhero;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import com.example.quiz2.fragments.SolicitarFragment;
 
 public class MainMarvelActivity extends AppCompatActivity {
 
@@ -104,8 +105,8 @@ public class MainMarvelActivity extends AppCompatActivity {
     private void setupToolbar() {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Marvel Studios");
-            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setTitle("");
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
     }
 

@@ -38,10 +38,18 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        sharedPreferences = getSharedPreferences("MarvelUserPrefs", MODE_PRIVATE);
+        // Si ya está logueado, ir directo a la pantalla principal
+        if (sharedPreferences.getBoolean("isLoggedIn", false)
+                && !sharedPreferences.getString("currentUser", "").isEmpty()) {
+            Intent intent = new Intent(LoginActivity.this, MainMarvelActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         initializeViews();
         setupListeners();
-        sharedPreferences = getSharedPreferences("MarvelUserPrefs", MODE_PRIVATE);
-        
         // Verificar si hay un usuario registrado
         checkRegisteredUser();
     }

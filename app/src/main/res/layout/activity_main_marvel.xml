@@ -18,10 +18,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Marvel Heroes"
         app:titleTextColor="@color/marvel_white"
-        app:logo="@drawable/marvel_login_logo"
-        app:menu="@menu/toolbar_menu" />
+        app:menu="@menu/toolbar_menu">
+
+        <ImageView
+            android:id="@+id/marvelLogo"
+            android:layout_width="80dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/marvel_login_logo"
+            android:scaleType="fitCenter"
+            android:layout_marginStart="8dp"/>
+
+        <TextView
+            android:id="@+id/toolbarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:text="Marvel Heroes"
+            android:textColor="@color/marvel_white"
+            android:textSize="10sp"
+            android:fontFamily="@font/orbitron_bold" />
+    </com.google.android.material.appbar.MaterialToolbar>
 
     <!-- Fragment Container -->
     <androidx.fragment.app.FragmentContainerView
